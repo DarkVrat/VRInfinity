@@ -1,31 +1,27 @@
 #pragma once
 
 #include <iostream>
+#include <nanodbc/nanodbc.h>
 
 namespace DB
 {
     class DBController {
     public:
-        DBController(const std::string& host, const std::string& user, const std::string& password, const std::string& database);
-        DBController(const DBController& dbController)                      = delete;
-        DBController(DBController&& dbController)               noexcept    = default;
-        DBController& operator=(const DBController& dbController)           = delete;
-        DBController& operator=(DBController&& dbController)    noexcept    = default;
+        DBController(const std::string& settings);
+        DBController(const DBController& dbController);
+        DBController(DBController&& dbController)               noexcept;
+        DBController& operator=(const DBController& dbController);
+        DBController& operator=(DBController&& dbController)    noexcept;
         ~DBController();
-
-        void connect();
-        void disconnect();
 
         void startTransaction();
         void commitTransaction();
         void rollbackTransaction();
 
-
-
+        bool execute(const std::string& query);
+        nanodbc::statement statement(const std::string& query);
     private:
-        std::string m_host;
-        std::string m_user;
-        std::string m_password;
-        std::string m_database;
+        std::string m_settings;
+        nanodbc::connection m_conn;
     };
 }

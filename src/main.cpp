@@ -6,8 +6,9 @@
 
 #include <nanodbc/nanodbc.h>
 
-//#include "dataBase/usersCRUD.h"
+#include "dataBase/usersCRUD.h"
 #include "dataBase/DBController.h"
+
 using namespace DB;
 
 // Функция для чтения содержимого файла
@@ -18,7 +19,15 @@ std::string readFile(const std::string& filename) {
     return buffer.str();
 }
 
-int main()
+
+std::string g_executablePath;
+void setExecutablePath(const std::string& executablePath) {
+    size_t found = executablePath.find_last_of("/\\");
+    g_executablePath = executablePath.substr(0, found);
+    g_executablePath += "\\";
+}
+
+int main(int argc, char** argv)
 {
     /*crow::SimpleApp app;
 
@@ -49,24 +58,13 @@ int main()
     /*app.port(18080).multithreaded().run();*/
 
     setlocale(LC_ALL, "Russian");
+    setExecutablePath(argv[0]);
 
     try {
-        // Подключение к базе данных
-        nanodbc::connection conn("DRIVER={MySQL ODBC 8.4 ANSI Driver};SERVER=localhost;DATABASE=vrinfinity;USER=root;PORT=3306;");
+        DBController cont(readFile(g_executablePath + "res\\DBConfig.txt"));
 
-        std::cout << "Successfully connected to the database!" << std::endl;
-
-        // Получение surname
-        nanodbc::result results = nanodbc::execute(conn, "SELECT id, name, surname FROM users");
-        std::cout << "Query executed. Fetching results:" << std::endl;
-
-        while (results.next()) {
-            int id = results.get<int>(0);
-            std::string name = results.get<std::string>(1);
-            std::string surname = results.get<std::string>(2);
-
-            std::cout << "ID: " << id << ", name: " << name << ", surname: " << surname << std::endl;
-        }
+        
+        
     }
     catch (const nanodbc::database_error& e) {
         std::cerr << "Database error: " << e.what() << std::endl;
@@ -74,5 +72,9 @@ int main()
     catch (const std::exception& e) {
         std::cerr << "Exception: " << e.what() << std::endl;
     }
+
+    int i;
+    std::cin >> i;
+
     return 0;
 }

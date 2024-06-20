@@ -9,16 +9,16 @@ namespace DB
 	public:
         // Constructors
         Users() : m_ID(0), m_email(""), m_passwordHash(""), m_name(""), m_surname(""), m_role("") {}
-        Users(uint32_t id, std::string email, std::string passwordHash, std::string name, std::string surname, std::string role)
+        Users(uint32_t id, std::string email, std::string passwordHash, std::string name, std::string surname, std::string role = "USER")
             : m_ID(id), m_email(email), m_passwordHash(passwordHash), m_name(name), m_surname(surname), m_role(role) {}
 
         // Get
-        uint32_t    getID()             const { return m_ID;            }
-        std::string getEmail()          const { return m_email;         }
-        std::string getPasswordHash()   const { return m_passwordHash;  }
-        std::string getName()           const { return m_name;          }
-        std::string getSurname()        const { return m_surname;       }
-        std::string getRole()           const { return m_role;          }
+        const uint32_t&    getID()             const { return m_ID;            }
+        const std::string& getEmail()          const { return m_email;         }
+        const std::string& getPasswordHash()   const { return m_passwordHash;  }
+        const std::string& getName()           const { return m_name;          }
+        const std::string& getSurname()        const { return m_surname;       }
+        const std::string& getRole()           const { return m_role;          }
 
         // Set
         void setID          (uint32_t id)                       { m_ID = id;                        }
@@ -29,12 +29,9 @@ namespace DB
         void setRole        (const std::string& role)           { m_role = role;                    }
 
         // Other
-        void printUserInfo() const {
-            std::cout << "ID: "         << m_ID         << std::endl;
-            std::cout << "Email: "      << m_email      << std::endl;
-            std::cout << "Name: "       << m_name       << std::endl;
-            std::cout << "Surname: "    << m_surname    << std::endl;
-            std::cout << "Role: "       << m_role       << std::endl;
+        void printUserInfo() const 
+        {
+            std::cout   << "ID: " << m_ID << ", Email: " << m_email << ", Name: " << m_name << ", Surname: " << m_surname << ", Role: " << m_role << std::endl;
         }
 
 	private:

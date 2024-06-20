@@ -9,6 +9,7 @@ set(DATABASE_HEADERS
 	src/dataBase/visits.h
 	src/dataBase/visitsCRUD.h
 	src/dataBase/DBController.h
+	src/dataBase/converterTimeString.h
 )
 
 set(DATABASE_SOURCE

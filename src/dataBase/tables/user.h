@@ -4,12 +4,12 @@
 
 namespace DB
 {
-	class Users
+	class user
 	{
 	public:
         // Constructors
-        Users() : m_ID(0), m_email(""), m_passwordHash(""), m_name(""), m_surname(""), m_role("") {}
-        Users(uint32_t id, std::string email, std::string passwordHash, std::string name, std::string surname, std::string role = "USER")
+        user() : m_ID(0), m_email(""), m_passwordHash(""), m_name(""), m_surname(""), m_role("") {}
+        user(uint32_t id, std::string email, std::string passwordHash, std::string name, std::string surname, std::string role = "USER")
             : m_ID(id), m_email(email), m_passwordHash(passwordHash), m_name(name), m_surname(surname), m_role(role) {}
 
         // Get

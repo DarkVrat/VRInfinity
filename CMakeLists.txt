@@ -4,10 +4,6 @@ set(PROJECT VRInfinity)
 project(${PROJECT})
 
 set(DATABASE_HEADERS 
-    src/dataBase/users.h
-	src/dataBase/usersCRUD.h
-	src/dataBase/visits.h
-	src/dataBase/visitsCRUD.h
 	src/dataBase/DBController.h
 	src/dataBase/converterTimeString.h
 )
@@ -16,13 +12,35 @@ set(DATABASE_SOURCE
 	src/dataBase/DBController.cpp
 )
 
+set(TABLES_HEADERS
+	src/dataBase/tables/game.h
+	src/dataBase/tables/imageNews.h
+	src/dataBase/tables/news.h
+	src/dataBase/tables/textNews.h
+	src/dataBase/tables/user.h
+	src/dataBase/tables/visit.h
+)
+
+set(CRUD_HEADERS
+	src/dataBase/CRUD/gameCRUD.h
+	src/dataBase/CRUD/imageNewsCRUD.h
+	src/dataBase/CRUD/newsCRUD.h
+	src/dataBase/CRUD/textNewsCRUD.h
+	src/dataBase/CRUD/userCRUD.h
+	src/dataBase/CRUD/visitCRUD.h
+)
+
 add_executable(${PROJECT} 
 	src/main.cpp
 	${DATABASE_HEADERS}
 	${DATABASE_SOURCE}
+	${TABLES_HEADERS}
+	${CRUD_HEADERS}
 )
 
 source_group("Header Files\\DataBase" FILES ${DATABASE_HEADERS})
+source_group("Header Files\\DataBase\\TABLES" FILES ${TABLES_HEADERS})
+source_group("Header Files\\DataBase\\CRUD" FILES ${CRUD_HEADERS})
 source_group("Source Files\\DataBase" FILES ${DATABASE_SOURCE})
 
 add_definitions(-D_WIN32_WINNT=0x0601)

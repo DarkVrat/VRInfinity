@@ -32,6 +32,8 @@ set(CRUD_HEADERS
 
 add_executable(${PROJECT} 
 	src/main.cpp
+	src/security.h
+	src/parser.h
 	${DATABASE_HEADERS}
 	${DATABASE_SOURCE}
 	${TABLES_HEADERS}

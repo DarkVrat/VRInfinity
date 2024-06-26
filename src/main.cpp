@@ -1,24 +1,17 @@
 #include "crow.h"
+
 #include <fstream>
 #include <sstream>
-#include <string>
 #include <iostream>
-
+#include <cstdlib>
+#include <ctime>
 #include <nanodbc/nanodbc.h>
 
 #include "dataBase/CRUD/userCRUD.h"
 #include "dataBase/DBController.h"
+#include "security.h"
 
 using namespace DB;
-
-// Функция для чтения содержимого файла
-std::string readFile(const std::string& filename) {
-    std::ifstream file(filename);
-    std::stringstream buffer;
-    buffer << file.rdbuf();
-    return buffer.str();
-}
-
 
 std::string g_executablePath;
 void setExecutablePath(const std::string& executablePath) {
@@ -27,54 +20,72 @@ void setExecutablePath(const std::string& executablePath) {
     g_executablePath += "\\";
 }
 
+std::string readFile(const std::string& filename) {
+    std::ifstream file(g_executablePath+filename);
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    return buffer.str();
+}
+
 int main(int argc, char** argv)
 {
-    /*crow::SimpleApp app;
+    setExecutablePath(argv[0]);
+    crow::SimpleApp app;
 
-    CROW_ROUTE(app, "/register").methods(crow::HTTPMethod::POST)
-        ([](const crow::request& req) {
-        auto body = crow::json::load(req.body);
-        if (!body) {
-            return crow::response(400, "Invalid JSON");
-        }
+    CROW_ROUTE(app, "/").methods("GET"_method, "POST"_method)
+        ([&](const crow::request& req, crow::response& res) {
+        auto cookie_value = req.get_header_value("Cookie");
 
-        std::string name = body["name"].s();
-        std::string surname = body["surname"].s();
-        std::string email = body["email"].s();
-        std::string password = body["password"].s();
-
-        DB::Users user(0, email, password, name, surname, "USER");
-
-        DB::DBController dbController("localhost:3306", "root", "", "vrinfinity");
-
-        if (DB::usersCRUD::createUser(&dbController, user)) {
-            return crow::response(200, "User registered successfully");
+        if (false) {
+            res.set_header("Content-Type", "text/html");
+            res.write(readFile("res/indexLogin.html"));
         }
         else {
-            return crow::response(400, "User already exists");
+            res.set_header("Content-Type", "text/html");
+            res.write(readFile("res/indexNONLogin.html"));
         }
-    });*/
+        res.end();
+    });
 
-    /*app.port(18080).multithreaded().run();*/
+    CROW_ROUTE(app, "/login")
+        .methods("GET"_method)
+        ([](const crow::request& req, crow::response& res) {
+        res.set_header("Content-Type", "text/html");
+        res.write(readFile("res/login.html"));
+        res.end();
+    });
 
-    setlocale(LC_ALL, "Russian");
-    setExecutablePath(argv[0]);
+    CROW_ROUTE(app, "/login")
+        .methods("POST"_method)
+        ([](const crow::request& req, crow::response& res) {
 
-    try {
-        DBController cont(readFile(g_executablePath + "res\\DBConfig.txt"));
 
-        
-        
-    }
-    catch (const nanodbc::database_error& e) {
-        std::cerr << "Database error: " << e.what() << std::endl;
-    }
-    catch (const std::exception& e) {
-        std::cerr << "Exception: " << e.what() << std::endl;
-    }
+        std::string username = "123";
+        std::string password = "qwe";
 
-    int i;
-    std::cin >> i;
+        DBController dbCon(readFile("res/DBConfig.txt"));
+        user USER = usersCRUD::getUserByEmail(&dbCon, username);
 
-    return 0;
+        if (USER.getPasswordHash() == password) {
+            std::string token = generateToken(USER.getName(), USER.getSurname(), USER.getEmail(), USER.getRole());
+            res.add_header("Set-Cookie", "token=" + token + "; Path=/; Max-Age=600");
+            res.write("Cookie set successfully");
+            res.redirect("/");
+            res.end();
+        }
+        else {
+            res.code = 401;
+            res.end("Unauthorized");
+        }
+    });
+
+    CROW_ROUTE(app, "/logout")
+        .methods("POST"_method)
+        ([](const crow::request& req, crow::response& res) {
+        res.add_header("Set-Cookie", "token=NULL; Path=/; Max-Age=600");
+        res.write("Cookie set successfully");
+        res.redirect("/");
+    });
+
+    app.port(18080).multithreaded().run();
 }

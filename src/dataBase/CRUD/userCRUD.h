@@ -60,6 +60,31 @@ namespace DB
             return User;
         }
 
+        static user getUserByEmail(DBController* dbController, const std::string& email)
+        {
+            user User;
+            try
+            {
+                nanodbc::statement stmt(dbController->statement("SELECT id, email, password_hash, name, surname, role FROM user WHERE email = ?;"));
+                stmt.bind(0, email.c_str());
+                nanodbc::result results = execute(stmt);
+
+                if (results.next()) {
+                    User.setID(results.get<uint32_t>(0));
+                    User.setEmail(results.get<std::string>(1));
+                    User.setPasswordHash(results.get<std::string>(2));
+                    User.setName(results.get<std::string>(3));
+                    User.setSurname(results.get<std::string>(4));
+                    User.setRole(results.get<std::string>(5));
+                }
+            }
+            catch (const nanodbc::database_error& e)
+            {
+                std::cerr << "Database error: " << e.what() << std::endl;
+            }
+            return User;
+        }
+
         static bool createUser(DBController* dbController, const user& User)
         {
             try
@@ -117,11 +142,12 @@ namespace DB
             return true;
         }
 
-        inline std::vector<user> getAllUsers()          { return getAllUsers(m_dbController);       }
-        inline user     getUserByID(uint32_t id)        { return getUserByID(m_dbController, id);   }
-        inline bool     createUser(const user& User)    { return createUser(m_dbController, User);  }
-        inline bool     updateUser(const user& User)    { return updateUser(m_dbController, User);  }
-        inline bool     deleteUser(uint32_t id)         { return deleteUser(m_dbController, id);    }
+        inline std::vector<user> getAllUsers()                      { return getAllUsers(m_dbController);           }
+        inline user     getUserByID(uint32_t id)                    { return getUserByID(m_dbController, id);       }
+        inline user     getUserByEmail(const std::string& email)    { return getUserByEmail(m_dbController, email); }
+        inline bool     createUser(const user& User)                { return createUser(m_dbController, User);      }
+        inline bool     updateUser(const user& User)                { return updateUser(m_dbController, User);      }
+        inline bool     deleteUser(uint32_t id)                     { return deleteUser(m_dbController, id);        }
     private:
         DBController* m_dbController;
 	};

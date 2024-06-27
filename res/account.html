@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой аккаунт - VR Club</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <a href="/">VR Club</a>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="/news?page=1">Новости</a></li>
+                <li><a href="/catalog?page=1">Каталог игр</a></li>
+                <li><a href="/booking">Бронирование</a></li>
+                PLACE_FOR_LOGIN_STATE
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section class="account-info">
+            <h1>Информация об аккаунте</h1>
+            <div class="user-details">
+                <p><strong>Имя:</strong> PLACE_FOR_NAME</p>
+                <p><strong>Фамилия:</strong> PLACE_FOR_SURNAME</p>
+                <p><strong>Почта:</strong> PLACE_FOR_EMAIL</p>
+            </div>
+            <div class="account-buttons">
+                <a href="/settings" class="btn">Настройки</a>
+                <a href="/logout" class="btn">Выход</a>
+            </div>
+        </section>
+        <section class="record-table">
+            <h2>Записи пользователя</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Дата и время</th>
+                        <th>Услуга</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!--
+					<tr>
+                        <td>TIMESTAMP</td>
+                        <td>SERVICE</td>
+					</tr>
+					-->
+                    PLACE_FOR_TBODY
+                </tbody>
+            </table>
+        </section>
+    </main>
+</body>
+</html>

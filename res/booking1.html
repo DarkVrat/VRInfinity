@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Бронирование - VR Club</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <a href="/">VR Club</a>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="/news?page=1">Новости</a></li>
+                <li><a href="/catalog?page=1">Каталог игр</a></li>
+                <li><a href="/booking">Бронирование</a></li>
+                PLACE_FOR_LOGIN_STATE
+            </ul>
+        </nav>
+    </header>
+        <section class="booking">
+            <h1>Бронирование</h1>
+            <form id="booking-form">
+                <div class="form-group">
+                    <label for="name">Имя:</label>
+                    <input type="text" id="name" name="name" value="PLACE_FOR_NAME" required>
+                </div>
+                <div class="form-group">
+                    <label for="surname">Фамилия:</label>
+                    <input type="text" id="surname" name="surname" value="PLACE_FOR_SURNAME" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Почта:</label>
+                    <input type="email" id="email" name="email" value="PLACE_FOR_EMAIL" required>
+                </div>
+                <div class="form-group">
+                    <label for="service">Выберите услугу:</label>
+                    <select id="service" name="service" required>
+                        <option value="">Выберите услугу</option>
+                        <option value="1">Стандартный сеанс VR</option>
+                        <option value="2">Расширенный сеанс VR</option>
+                        <option value="3">VIP сеанс VR</option>
+						<!--написать все услуги-->
+                    </select>
+                </div>
+                <button type="submit">Далее</button>
+            </form>
+        </section>
+</body>
+</html>

@@ -3,23 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home Page</title>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #f0f0f0; margin: 0; padding: 0; }
-        .header { background-color: #4CAF50; padding: 20px; text-align: center; color: white; }
-        .content { padding: 20px; }
-        .footer { background-color: #4CAF50; padding: 10px; text-align: center; color: white; position: fixed; width: 100%; bottom: 0; }
-    </style>
+    <title>VR Club</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="header">
-        <h1>Welcome to the Home Page</h1>
-    </div>
-    <div class="content">
-        <p>This is a standard home page content. You can put your content here.</p>
-    </div>
-    <div class="footer">
-        <p>&copy; 2024 VRInfinity</p>
-    </div>
+    <header>
+        <div class="logo">
+            <a href="/">VR Club</a>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="/news?page=1">Новости</a></li>
+                <li><a href="/catalog?page=1">Каталог игр</a></li>
+                <li><a href="/booking">Бронирование</a></li>
+                PLACE_FOR_LOGIN_STATE
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section class="about">
+			<!--Сделать Описание-->
+            <h1>О нашем клубе</h1>
+            <p>Добро пожаловать в VR Club! Мы предоставляем лучшие VR-игры и впечатления для всех возрастов. Наш клуб оснащен современными VR-устройствами и предлагает разнообразные игры на любой вкус.</p>
+        </section>
+        <section class="pricing">
+			<!--Сделать прайс-->
+            <h2>Прайс-лист</h2>
+            <ul>
+                <li>1 час - 500 рублей</li>
+                <li>2 часа - 900 рублей</li>
+                <li>Полдня (4 часа) - 1700 рублей</li>
+                <li>Целый день (8 часов) - 3000 рублей</li>
+            </ul>
+        </section>
+    </main>
 </body>
 </html>

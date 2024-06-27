@@ -13,20 +13,24 @@ enum TokenField {
 };
 
 std::string parseToken(const std::string& input, TokenField field) {
-    std::stringstream ss(input);
-    std::string token;
-    std::vector<std::string> tokens;
+    size_t start = 0;
+    size_t end = input.find(':');
+    size_t currentField = 0;
 
-    while (std::getline(ss, token, ':')) {
-        tokens.push_back(token);
+    while (end != std::string::npos && currentField < field) {
+        start = end + 1;
+        end = input.find(':', start);
+        ++currentField;
     }
 
-    if (field < tokens.size()) {
-        return tokens[field];
+    if (currentField == field) {
+        if (end == std::string::npos)
+            return input.substr(start);
+        else 
+            return input.substr(start, end - start);
     }
-    else {
-        return "Invalid input";
-    }
+
+    return "Invalid input";
 }
 
 std::string getValue(const std::string& str, const std::string& key) {

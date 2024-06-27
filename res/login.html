@@ -3,16 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Вход - VR Club</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Login</h1>
-    <form action="/login" method="post">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required><br>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required><br>
-        <button type="submit">Login</button>
-    </form>
+    <header>
+        <div class="logo">
+            <a href="/">VR Club</a>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="/news?page=1">Новости</a></li>
+                <li><a href="/catalog?page=1">Каталог игр</a></li>
+                <li><a href="/booking">Бронирование</a></li>
+                PLACE_FOR_LOGIN_STATE
+            </ul>
+        </nav>
+    </header>
+    <section class="login">
+        <h1>Вход</h1>
+        <form id="login-form">
+			<div class="form-group">
+				<label for="email">Почта:</label>
+				<input type="email" id="email" name="email" required>
+			</div>
+			<div class="form-group">
+				<label for="password">Пароль:</label>
+				<div class="password-container">
+					<input type="password" id="password" name="password" required>
+					<button type="button" id="toggle-password">Показать</button>
+				</div>
+			</div>
+			<button type="submit" class="submit-button">Войти</button>
+		</form>
+        <div class="links">
+            <a href="/register">Регистрация</a> |
+            <a href="/reset_password">Сброс пароля</a>
+        </div>
+    </section>
+    <script src="script.js"></script>
 </body>
 </html>

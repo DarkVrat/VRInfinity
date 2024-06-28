@@ -12,20 +12,15 @@ namespace DB
             : m_ID(id), m_text(text), m_nextID(nextID) {}
 
         // Get
-        const uint32_t& getID()         const { return m_ID;        }
-        const std::string& getText()    const { return m_text;      }
-        const uint32_t& getNextID()     const { return m_nextID;    }
+        const uint32_t& getID()         const { return m_ID; }
+        const std::string& getText()    const { return m_text; }
+        const uint32_t& getNextID()     const { return m_nextID; }
 
         // Set
-        void setID(uint32_t id)                 { m_ID = id;            }
-        void setText(const std::string& text)   { m_text = text;        }
-        void setNextID(uint32_t nextID)             { m_nextID = nextID;    }
+        void setID(uint32_t id) { m_ID = id; }
+        void setText(const std::string& text) { m_text = text; }
+        void setNextID(uint32_t nextID) { m_nextID = nextID; }
 
-        // Other
-        void printVisitInfo() const
-        {
-            std::cout << "ID: " << m_ID << ", text: " << m_text << ", nextID: " << m_nextID << std::endl;
-        }
     private:
         uint32_t m_ID;
         std::string m_text;

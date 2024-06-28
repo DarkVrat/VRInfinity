@@ -30,12 +30,6 @@ namespace DB
         void setEnd     (const std::string& end)        { m_end = end;          }
         void setService (const std::string& service)    { m_service = service;  }
 
-        // Other
-        void printVisitInfo() const
-        {
-            std::cout << "ID: " << m_ID << ", name: " << m_name << ", surname: " << m_surname << ", email: " << m_email << ", start: " << m_start << ", end: " << m_end << ", service: " << m_service << std::endl;
-        }
-
     private:
         uint32_t m_ID;
         std::string m_name;

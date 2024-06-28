@@ -16,7 +16,7 @@ namespace DB
             std::vector<game> games;
             try
             {
-                nanodbc::statement stmt(dbController->statement("SELECT id, name, text, image FROM game"));
+                nanodbc::statement stmt(dbController->statement("SELECT id, name, text, image FROM game;"));
                 nanodbc::result results = execute(stmt);
 
                 while (results.next()) {

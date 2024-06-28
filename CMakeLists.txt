@@ -34,6 +34,9 @@ add_executable(${PROJECT}
 	src/main.cpp
 	src/security.h
 	src/parser.h
+	src/genericHTML.h
+	src/stringConverter.h
+	src/Utf8Conv.hpp
 	${DATABASE_HEADERS}
 	${DATABASE_SOURCE}
 	${TABLES_HEADERS}

@@ -16,7 +16,7 @@ namespace DB
             std::vector<news> newses;
             try
             {
-                nanodbc::statement stmt(dbController->statement("SELECT id, time, subject, text_news_id, image_news_id FROM news"));
+                nanodbc::statement stmt(dbController->statement("SELECT id, time, subject, text_news_id, image_news_id FROM news;"));
                 nanodbc::result results = execute(stmt);
 
                 while (results.next()) {

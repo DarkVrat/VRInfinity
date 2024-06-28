@@ -16,7 +16,7 @@ namespace DB
             std::vector<imageNews> imageNewses;
             try
             {
-                nanodbc::statement stmt(dbController->statement("SELECT id, image, next_id FROM image_news"));
+                nanodbc::statement stmt(dbController->statement("SELECT id, image, next_id FROM image_news;"));
                 nanodbc::result results = execute(stmt);
 
                 while (results.next()) {
@@ -32,7 +32,7 @@ namespace DB
             return imageNewses;
         }
 
-        static imageNews getImageNewsByID(DBController* dbController, uint32_t id)
+        static imageNews getImageNewsByID(DBController* dbController, int32_t id)
         {
             imageNews ImageNews;
             try
@@ -89,7 +89,7 @@ namespace DB
             return true;
         }
 
-        static bool deleteImageNews(DBController* dbController, uint32_t id)
+        static bool deleteImageNews(DBController* dbController, int32_t id)
         {
             try
             {
@@ -106,10 +106,10 @@ namespace DB
         }
 
         inline std::vector<imageNews> getAllImageNewses()           { return getAllImageNewses(m_dbController);             }
-        inline imageNews     getImageNewsByID(uint32_t id)          { return getImageNewsByID(m_dbController, id);          }
+        inline imageNews     getImageNewsByID(int32_t id)           { return getImageNewsByID(m_dbController, id);          }
         inline bool     createImageNews(const imageNews& ImageNews) { return createImageNews(m_dbController, ImageNews);    }
         inline bool     updateImageNews(const imageNews& ImageNews) { return updateImageNews(m_dbController, ImageNews);    }
-        inline bool     deleteImageNews(uint32_t id)                { return deleteImageNews(m_dbController, id);           }
+        inline bool     deleteImageNews(int32_t id)                 { return deleteImageNews(m_dbController, id);           }
     private:
         DBController* m_dbController;
     };

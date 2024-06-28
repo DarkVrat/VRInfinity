@@ -50,10 +50,8 @@
 		var selectedDay = document.getElementById('datepicker').value;
 		var timeSelect = document.getElementById('time');
 
-		// Clear existing options
 		timeSelect.innerHTML = '';
 
-		// Populate options based on selected day
 		if (selectedDay && timeSlots[selectedDay]) {
 			var timeOptions = timeSlots[selectedDay];
 			timeOptions.forEach(function(time) {
@@ -69,7 +67,6 @@
 		}
 	}
 
-	// Initialize time options on page load
 	window.onload = function() {
 		updateTimeOptions();
 	};

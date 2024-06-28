@@ -11,12 +11,12 @@ namespace DB
     public:
         textNewsCRUD(DBController* dbController) :m_dbController(dbController) {}
 
-        static std::vector<textNews> getAlltextNewses(DBController* dbController)
+        static std::vector<textNews> getAllTextNewses(DBController* dbController)
         {
             std::vector<textNews> textNewses;
             try
             {
-                nanodbc::statement stmt(dbController->statement("SELECT id, text, next_id FROM text_news"));
+                nanodbc::statement stmt(dbController->statement("SELECT id, text, next_id FROM text_news;"));
                 nanodbc::result results = execute(stmt);
 
                 while (results.next()) { 
@@ -32,7 +32,7 @@ namespace DB
             return textNewses;
         }
 
-        static textNews gettextNewsByID(DBController* dbController, uint32_t id)
+        static textNews getTextNewsByID(DBController* dbController, uint32_t id)
         {
             textNews TextNews;
             try
@@ -54,7 +54,7 @@ namespace DB
             return TextNews;
         }
 
-        static bool createtextNews(DBController* dbController, const textNews& TextNews)
+        static bool createTextNews(DBController* dbController, const textNews& TextNews)
         {
             try
             {
@@ -71,7 +71,7 @@ namespace DB
             return true;
         }
 
-        static bool updatetextNews(DBController* dbController, const textNews& TextNews)
+        static bool updateTextNews(DBController* dbController, const textNews& TextNews)
         {
             try
             {
@@ -89,7 +89,7 @@ namespace DB
             return true;
         }
 
-        static bool deletetextNews(DBController* dbController, uint32_t id)
+        static bool deleteTextNews(DBController* dbController, uint32_t id)
         {
             try
             {
@@ -105,11 +105,11 @@ namespace DB
             return true;
         }
 
-        inline std::vector<textNews> getAlltextNewses()             { return getAlltextNewses(m_dbController);          }
-        inline textNews     gettextNewsByID(uint32_t id)            { return gettextNewsByID(m_dbController, id);       }
-        inline bool     createtextNews(const textNews& TextNews)    { return createtextNews(m_dbController, TextNews);  }
-        inline bool     updatetextNews(const textNews& TextNews)    { return updatetextNews(m_dbController, TextNews);  }
-        inline bool     deletetextNews(uint32_t id)                 { return deletetextNews(m_dbController, id);        }
+        inline std::vector<textNews> getAllTextNewses()             { return getAllTextNewses(m_dbController);          }
+        inline textNews     getTextNewsByID(uint32_t id)            { return getTextNewsByID(m_dbController, id);       }
+        inline bool     createTextNews(const textNews& TextNews)    { return createTextNews(m_dbController, TextNews);  }
+        inline bool     updateTextNews(const textNews& TextNews)    { return updateTextNews(m_dbController, TextNews);  }
+        inline bool     deleteTextNews(uint32_t id)                 { return deleteTextNews(m_dbController, id);        }
     private:
         DBController* m_dbController;
     };

@@ -16,7 +16,7 @@ namespace DB
             std::vector<user> users;
             try
             {
-                nanodbc::statement stmt(dbController->statement("SELECT id, email, password_hash, name, surname, role FROM user"));
+                nanodbc::statement stmt(dbController->statement("SELECT id, email, password_hash, name, surname, role FROM user;"));
                 nanodbc::result results = execute(stmt);
 
                 while (results.next()) {

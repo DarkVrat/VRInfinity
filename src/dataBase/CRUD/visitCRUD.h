@@ -11,12 +11,38 @@ namespace DB
     public:
         VisitsCRUD(DBController* dbController) :m_dbController(dbController) {}
 
+        static std::vector<visit> getAllVisitsByEmail(DBController* dbController, const std::string& email)
+        {
+            std::vector<visit> visits;
+            try
+            {
+                nanodbc::statement stmt(dbController->statement("SELECT id, name, surname, email, start, end, service FROM visit WHERE email = ?;"));
+                stmt.bind(0, email.c_str());
+                nanodbc::result results = execute(stmt);
+
+                while (results.next()) {
+                    visits.push_back(visit(results.get<uint32_t>(0),           // id
+                        results.get<std::string>(1),        // name
+                        results.get<std::string>(2),        // surname
+                        results.get<std::string>(3),        // email
+                        results.get<std::string>(4),        // start
+                        results.get<std::string>(5),        // end
+                        results.get<std::string>(6)));      // service
+                }
+            }
+            catch (const nanodbc::database_error& e)
+            {
+                std::cerr << "Database error: " << e.what() << std::endl;
+            }
+            return visits;
+        }
+
         static std::vector<visit> getAllVisits(DBController* dbController)
         {
             std::vector<visit> visits;
             try
             {
-                nanodbc::statement stmt(dbController->statement("SELECT id, name, surname, email, start, end, service FROM visit"));
+                nanodbc::statement stmt(dbController->statement("SELECT id, name, surname, email, start, end, service FROM visit;"));
                 nanodbc::result results = execute(stmt);
 
                 while (results.next()) {
@@ -121,6 +147,7 @@ namespace DB
             return true;
         }
 
+        inline std::vector<visit> getAllVisitsByEmail(const std::string& email) { return getAllVisitsByEmail(m_dbController, email); }
         inline std::vector<visit> getAllVisits()        { return getAllVisits(m_dbController);      }
         inline visit    getVisitByID(uint32_t id)       { return getVisitByID(m_dbController, id);  }
         inline bool     createVisit(const visit& Visit) { return createVisit(m_dbController, Visit); }

@@ -1,4 +1,4 @@
-DRIVER={MySQL ODBC 8.4 ANSI Driver};
+DRIVER={MySQL ODBC 8.4 Unicode Driver};
 SERVER=localhost;
 PORT=3306;
 USER=root;

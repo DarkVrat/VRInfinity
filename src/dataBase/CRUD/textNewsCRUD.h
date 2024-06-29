@@ -20,9 +20,12 @@ namespace DB
                 nanodbc::result results = execute(stmt);
 
                 while (results.next()) { 
-                    textNewses.push_back(textNews(  results.get<uint32_t>(0),       // id
-                                                    results.get<std::string>(1),    // text
-                                                    results.get<uint32_t>(2)));     // next_id
+                    textNews TextNews;
+                    TextNews.setID(results.get<uint32_t>(0));
+                    TextNews.setText(results.get<std::string>(1));
+                    TextNews.setNextID(results.get<uint32_t>(2));
+
+                    textNewses.push_back(std::move(TextNews));     // next_id
                 }
             }
             catch (const nanodbc::database_error& e)

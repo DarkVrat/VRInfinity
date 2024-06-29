@@ -20,12 +20,15 @@ namespace DB
                 nanodbc::result results = execute(stmt);
 
                 while (results.next()) {
-                    users.push_back(user(   results.get<uint32_t>(0),       // id
-                                            results.get<std::string>(1),    // email
-                                            results.get<std::string>(2),    // password_hash
-                                            results.get<std::string>(3),    // name
-                                            results.get<std::string>(4),    // surname
-                                            results.get<std::string>(5)));  // role
+                    user User;
+                    User.setID(results.get<uint32_t>(0));
+                    User.setEmail(results.get<std::string>(1));
+                    User.setPasswordHash(results.get<std::string>(2));
+                    User.setName(results.get<std::string>(3));
+                    User.setSurname(results.get<std::string>(4));
+                    User.setRole(results.get<std::string>(5));
+
+                    users.push_back(std::move(User));
                 }
             }
             catch (const nanodbc::database_error& e)

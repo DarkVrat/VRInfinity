@@ -20,11 +20,14 @@ namespace DB
                 nanodbc::result results = execute(stmt);
 
                 while (results.next()) {
-                    newses.push_back(news(  results.get<uint32_t>(0),       // id
-                                            results.get<std::string>(1),    // time
-                                            results.get<std::string>(2),    // subject
-                                            results.get<uint32_t>(3),       // text_news_id
-                                            results.get<int32_t>(4)));          // image_news_id
+                    news News;
+                    News.setID(results.get<uint32_t>(0));
+                    News.setTime(results.get<std::string>(1));
+                    News.setSubject(results.get<std::string>(2));
+                    News.setTextNewsID(results.get<uint32_t>(3));
+                    News.setImageNewsID(results.get<int32_t>(4));
+
+                    newses.push_back(std::move(News));          // image_news_id
                 }
             }
             catch (const nanodbc::database_error& e)
@@ -36,7 +39,7 @@ namespace DB
 
         static news getNewsByID(DBController* dbController, uint32_t id)
         {
-            news Game;
+            news News;
             try
             {
                 nanodbc::statement stmt(dbController->statement("SELECT id, time, subject, text_news_id, image_news_id FROM news WHERE id = ?;"));
@@ -44,18 +47,18 @@ namespace DB
                 nanodbc::result results = execute(stmt);
 
                 if (results.next()) {
-                    Game.setID(results.get<uint32_t>(0));
-                    Game.setTime(results.get<std::string>(1));
-                    Game.setSubject(results.get<std::string>(2));
-                    Game.setTextNewsID(results.get<uint32_t>(3));
-                    Game.setImageNewsID(results.get<int32_t>(4));
+                    News.setID(results.get<uint32_t>(0));
+                    News.setTime(results.get<std::string>(1));
+                    News.setSubject(results.get<std::string>(2));
+                    News.setTextNewsID(results.get<uint32_t>(3));
+                    News.setImageNewsID(results.get<int32_t>(4));
                 }
             }
             catch (const nanodbc::database_error& e)
             {
                 std::cerr << "Database error: " << e.what() << std::endl;
             }
-            return Game;
+            return News;
         }
 
         static bool createNews(DBController* dbController, const news& News)

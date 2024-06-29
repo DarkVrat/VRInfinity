@@ -11,11 +11,11 @@
 #include <nanodbc/nanodbc.h>
 
 #include "dataBase/CRUD/userCRUD.h"
+#include "dataBase/CRUD/newsCRUD.h"
 #include "dataBase/DBController.h"
 #include "security.h"
 #include "parser.h"
 #include "genericHTML.h"
-#include "stringConverter.h"
 
 using namespace DB;
 
@@ -27,21 +27,22 @@ void setExecutablePath(const std::string& executablePath)
     g_executablePath += "\\";
 }
 
-std::wstring readFile_W(const std::string& filename) 
-{
-    std::wifstream file(g_executablePath + filename);
-    file.imbue(std::locale(file.getloc(), new std::codecvt_utf8<wchar_t>));
-    std::wstringstream buffer;
-    buffer << file.rdbuf();
-    return buffer.str();
-}
-
 std::string readFile(const std::string& filename)
 {
     std::ifstream file(g_executablePath + filename);
     std::stringstream buffer;
     buffer << file.rdbuf();
     return buffer.str();
+}
+
+std::vector<char> readFileImage(const std::string& filepath) {
+    std::ifstream file(g_executablePath + filepath, std::ios::binary);
+    if (!file) {
+        return {};
+    }
+
+    std::vector<char> buffer((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    return buffer;
 }
 
 void setAuthToken(crow::response& res, const std::string& token)
@@ -58,7 +59,6 @@ std::string getAuthToken(const crow::request& req)
 
 int main(int argc, char** argv)
 {
-    std::locale::global(std::locale("ru_RU.UTF-8"));
     setExecutablePath(argv[0]);
     crow::SimpleApp app;
 
@@ -92,7 +92,7 @@ int main(int argc, char** argv)
 
     CROW_ROUTE(app, "/image/<string>")
         ([](const std::string& filename) {
-        std::string content = readFile("res/image/" + filename);
+        std::vector<char> content = readFileImage("res/image/" + filename);
 
         if (content.empty()) {
             return crow::response(404);
@@ -100,7 +100,7 @@ int main(int argc, char** argv)
 
         crow::response res;
         res.set_header("Content-Type", "image/jpeg");
-        res.write(content);
+        res.body.assign(content.begin(), content.end());
         return res;
     });
 
@@ -108,13 +108,13 @@ int main(int argc, char** argv)
         ([](const crow::request& req, crow::response& res) 
     {
         std::string token = getAuthToken(req);
-        std::wstring html = readFile_W("res/index.html");
+        std::string html = readFile("res/index.html");
         genLoginState(html, verifyToken(token));
 
         res.set_header("Content-Type", "text/html");
-        res.write(to_string(html));
+        res.write(html);
         res.end();
-    });
+    }); 
 
     CROW_ROUTE(app, "/news").methods("GET"_method)
         ([](const crow::request& req, crow::response& res) {
@@ -123,39 +123,80 @@ int main(int argc, char** argv)
         int page_number = std::stoi(page_param);
 
         std::string token = getAuthToken(req);
-        std::wstring html = readFile_W("res/news.html");
+        std::string html = readFile("res/news.html");
         genLoginState(html, verifyToken(token));
 
         DBController dbController(readFile("res/DBConfig.txt"));
         genNews(html, &dbController, page_number);
-
+         
         res.set_header("Content-Type", "text/html");
-        res.write(to_string(html));
+        res.write(html);
         res.end();
     });
 
-
-
-    CROW_ROUTE(app, "/login")
-        .methods("GET"_method)
+    CROW_ROUTE(app, "/full_news").methods("GET"_method)
         ([](const crow::request& req, crow::response& res) {
+        auto query = crow::query_string(req.url_params);
+        std::string page_param = query.get("news") ? query.get("news") : "1"; // По умолчанию страница 1
+        int newsId = std::stoi(page_param);
+
+        std::string token = getAuthToken(req);
+        std::string html = readFile("res/full_news.html");
+        genLoginState(html, verifyToken(token));
+
+        DBController dbController(readFile("res/DBConfig.txt"));
+        genFullNews(html, &dbController, newsId);
+
         res.set_header("Content-Type", "text/html");
-        //res.write(readFile("res/login.html"));
+        res.write(html);
         res.end();
     });
 
-    CROW_ROUTE(app, "/login")
-        .methods("POST"_method)
+    CROW_ROUTE(app, "/catalog").methods("GET"_method)
         ([](const crow::request& req, crow::response& res) {
+        auto query = crow::query_string(req.url_params);
+        std::string page_param = query.get("page") ? query.get("page") : "1"; // По умолчанию страница 1
+        int page_number = std::stoi(page_param);
 
+        std::string token = getAuthToken(req);
+        std::string html = readFile("res/catalog_games.html");
+        genLoginState(html, verifyToken(token));
 
-        std::string username = "123";
-        std::string password = "qwe";
+        DBController dbController(readFile("res/DBConfig.txt"));
+        genGames(html, &dbController, page_number);
 
-        //DBController dbCon(readFile("res/DBConfig.txt"));
-        //user USER = usersCRUD::getUserByEmail(&dbCon, username);
+        res.set_header("Content-Type", "text/html");
+        res.write(html);
+        res.end();
+    });
 
-        /*if (USER.getPasswordHash() == password) {
+    CROW_ROUTE(app, "/login").methods("GET"_method)
+        ([](const crow::request& req, crow::response& res) {
+        std::string token = getAuthToken(req);
+        std::string html = readFile("res/login.html");
+        genLoginState(html, verifyToken(token));
+
+        res.set_header("Content-Type", "text/html");
+        res.write(html);
+        res.end();
+    });
+
+    CROW_ROUTE(app, "/login").methods("POST"_method)
+        ([](const crow::request& req, crow::response& res) {
+        std::string body = req.body;
+        std::string email = getValue(body, "email");
+        std::string password = getValue(body, "password");
+
+        std::string placeholder = "%40";
+        size_t pos = email.find(placeholder);
+        if (pos != std::string::npos)
+            email.replace(pos, placeholder.length(), "@");
+
+        DBController dbCon(readFile("res/DBConfig.txt"));
+        user USER = usersCRUD::getUserByEmail(&dbCon, email);
+
+        if (USER.getPasswordHash() == hashPassword(password))
+        {
             std::string token = generateToken(USER.getName(), USER.getSurname(), USER.getEmail(), USER.getRole());
             setAuthToken(res, token);
             res.redirect("/");
@@ -164,15 +205,104 @@ int main(int argc, char** argv)
         else {
             res.code = 401;
             res.end("Unauthorized");
-        }*/
+        }
     });
 
-    CROW_ROUTE(app, "/logout")
-        .methods("POST"_method)
+    CROW_ROUTE(app, "/account").methods("GET"_method)
         ([](const crow::request& req, crow::response& res) {
-        setAuthToken(res, "NULL");
+        std::string token = getAuthToken(req);
+        std::string html = readFile("res/account.html");
+        genLoginState(html, verifyToken(token));
+
+        DBController dbController(readFile("res/DBConfig.txt"));
+        genAccountHTML(html, token, &dbController);
+
+        res.set_header("Content-Type", "text/html");
+        res.write(html);
+        res.end();
+    });
+
+    CROW_ROUTE(app, "/settings").methods("GET"_method)
+        ([](const crow::request& req, crow::response& res) {
+        std::string token = getAuthToken(req);
+        std::string html = readFile("res/settings.html");
+        genLoginState(html, verifyToken(token));
+
+        res.set_header("Content-Type", "text/html");
+        res.write(html);
+        res.end();
+    });
+
+    CROW_ROUTE(app, "/settings").methods("POST"_method) //Изменение записей в визитах
+        ([](const crow::request& req, crow::response& res) {
+        std::string body = req.body;
+        std::string name = getValue(body, "name");
+        std::string surname = getValue(body, "surname");
+        std::string email = getValue(body, "email");
+        std::string password = getValue(body, "password");
+
+        std::string placeholder = "%40";
+        size_t pos = email.find(placeholder);
+        if (pos != std::string::npos)
+            email.replace(pos, placeholder.length(), "@");
+
+        std::string token = getAuthToken(req);
+
+        DBController dbCon(readFile("res/DBConfig.txt"));
+        user USER = usersCRUD::getUserByEmail(&dbCon, parseToken(token, TokenField::EMAIL));
+
+        if (name != "")     USER.setName(name);
+        if (surname != "")  USER.setSurname(surname);
+        if (email != "")    USER.setEmail(email);
+        if (password != "") USER.setPasswordHash(hashPassword(password));
+        usersCRUD::updateUser(&dbCon, USER);
+
+        token = generateToken(USER.getName(), USER.getSurname(), USER.getEmail(), USER.getRole());
+        setAuthToken(res, token);
         res.redirect("/");
         res.end();
+    });
+
+    CROW_ROUTE(app, "/logout").methods("GET"_method)
+        ([](const crow::request& req, crow::response& res) {
+        setAuthToken(res, "");
+        res.redirect("/");
+        res.end();
+    });
+
+    CROW_ROUTE(app, "/register").methods("GET"_method)
+        ([](const crow::request& req, crow::response& res) {
+        std::string token = getAuthToken(req);
+        std::string html = readFile("res/register.html");
+        genLoginState(html, verifyToken(token));
+
+        res.set_header("Content-Type", "text/html");
+        res.write(html);
+        res.end();
+    });
+
+    CROW_ROUTE(app, "/register").methods("POST"_method)
+        ([](const crow::request& req, crow::response& res) {
+        std::string body = req.body;
+        std::string name = getValue(body, "name"); 
+        std::string surname = getValue(body, "surname");
+        std::string email = getValue(body, "email");
+        std::string password = getValue(body, "password");
+
+        std::string placeholder = "%40";
+        size_t pos = email.find(placeholder);
+        if (pos != std::string::npos)
+            email.replace(pos, placeholder.length(), "@");
+
+        user USER(0, email, hashPassword(password), name, surname);
+
+        DBController dbCon(readFile("res/DBConfig.txt"));
+        usersCRUD::createUser(&dbCon, USER);
+
+        std::string token = generateToken(name, surname, email, "USER");
+        setAuthToken(res, token);
+        res.redirect("/");
+        res.end(); 
     });
 
     app.port(18080).multithreaded().run();

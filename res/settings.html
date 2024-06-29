@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Изменение аккаунта - VR Club</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
     <header>
@@ -22,7 +22,7 @@
     </header>
         <section class="account">
             <h1>Изменение аккаунта</h1>
-            <form id="account-form">
+			<form id="account-form" action="/settings" method="POST">
                 <div class="form-group">
                     <label for="name">Имя:</label>
                     <input type="text" id="name" name="name">
@@ -48,6 +48,6 @@
                 </div>
             </form>
         </section>
-    <script src="script.js"></script>
+    <script src="/js/script.js"></script>
 </body>
 </html>

@@ -21,13 +21,16 @@ namespace DB
                 nanodbc::result results = execute(stmt);
 
                 while (results.next()) {
-                    visits.push_back(visit(results.get<uint32_t>(0),           // id
-                        results.get<std::string>(1),        // name
-                        results.get<std::string>(2),        // surname
-                        results.get<std::string>(3),        // email
-                        results.get<std::string>(4),        // start
-                        results.get<std::string>(5),        // end
-                        results.get<std::string>(6)));      // service
+                    visit Visit;
+                    Visit.setID(results.get<uint32_t>(0));
+                    Visit.setName(results.get<std::string>(1));
+                    Visit.setSurname(results.get<std::string>(2));
+                    Visit.setEmail(results.get<std::string>(3));
+                    Visit.setStart(results.get<std::string>(4));
+                    Visit.setEnd(results.get<std::string>(5));
+                    Visit.setService(results.get<std::string>(6));
+
+                    visits.push_back(std::move(Visit));
                 }
             }
             catch (const nanodbc::database_error& e)
@@ -46,13 +49,16 @@ namespace DB
                 nanodbc::result results = execute(stmt);
 
                 while (results.next()) {
-                    visits.push_back(visit( results.get<uint32_t>(0),           // id
-                                            results.get<std::string>(1),        // name
-                                            results.get<std::string>(2),        // surname
-                                            results.get<std::string>(3),        // email
-                                            results.get<std::string>(4),        // start
-                                            results.get<std::string>(5),        // end
-                                            results.get<std::string>(6)));      // service
+                    visit Visit;
+                    Visit.setID(results.get<uint32_t>(0));
+                    Visit.setName(results.get<std::string>(1));
+                    Visit.setSurname(results.get<std::string>(2));
+                    Visit.setEmail(results.get<std::string>(3));
+                    Visit.setStart(results.get<std::string>(4));
+                    Visit.setEnd(results.get<std::string>(5));
+                    Visit.setService(results.get<std::string>(6));
+
+                    visits.push_back(std::move(Visit));
                 }
             }
             catch (const nanodbc::database_error& e)

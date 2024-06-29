@@ -30,7 +30,7 @@ std::string parseToken(const std::string& input, TokenField field) {
             return input.substr(start, end - start);
     }
 
-    return "Invalid input";
+    return "";
 }
 
 std::string getValue(const std::string& str, const std::string& key) {

@@ -20,10 +20,13 @@ namespace DB
                 nanodbc::result results = execute(stmt);
 
                 while (results.next()) {
-                    games.push_back(game(   results.get<uint32_t>(0),       // id
-                                            results.get<std::string>(1),    // name
-                                            results.get<std::string>(2),    // text
-                                            results.get<std::string>(3)));  // image
+                    game Game;
+                    Game.setID(results.get<uint32_t>(0));
+                    Game.setName(results.get<std::string>(1));
+                    Game.setText(results.get<std::string>(2));
+                    Game.setImage(results.get<std::string>(3));
+
+                    games.push_back(std::move(Game));  // image
                 }
             }
             catch (const nanodbc::database_error& e)

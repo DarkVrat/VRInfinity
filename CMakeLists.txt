@@ -19,6 +19,7 @@ set(TABLES_HEADERS
 	src/dataBase/tables/textNews.h
 	src/dataBase/tables/user.h
 	src/dataBase/tables/visit.h
+	src/dataBase/tables/resetPassword.h
 )
 
 set(CRUD_HEADERS
@@ -28,6 +29,7 @@ set(CRUD_HEADERS
 	src/dataBase/CRUD/textNewsCRUD.h
 	src/dataBase/CRUD/userCRUD.h
 	src/dataBase/CRUD/visitCRUD.h
+	src/dataBase/CRUD/resetPasswordCRUD.h
 )
 
 add_executable(${PROJECT} 

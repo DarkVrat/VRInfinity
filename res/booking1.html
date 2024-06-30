@@ -15,14 +15,14 @@
             <ul>
                 <li><a href="/news?page=1">Новости</a></li>
                 <li><a href="/catalog?page=1">Каталог игр</a></li>
-                <li><a href="/booking">Бронирование</a></li>
+                <li><a href="/booking1">Бронирование</a></li>
                 PLACE_FOR_LOGIN_STATE
             </ul>
         </nav>
     </header>
         <section class="booking">
             <h1>Бронирование</h1>
-            <form id="booking-form">
+			<form id="booking-form" action="/booking1" method="POST">
                 <div class="form-group">
                     <label for="name">Имя:</label>
                     <input type="text" id="name" name="name" value="PLACE_FOR_NAME" required>

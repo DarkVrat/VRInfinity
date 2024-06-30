@@ -211,3 +211,17 @@ void genFullNews(std::string& html, DBController* dbController, uint32_t id)
         html.replace(pos, placeholder.length(), fullText);
     }
 }
+
+void genErrorMassege(std::string& html, const std::wstring& massege=L"")
+{
+    std::string placeholder = "PLACE_FOR_ERROR_MASSEGE";
+    size_t pos = html.find(placeholder);
+    if (pos != std::string::npos) {
+        if (massege == L"")
+        {
+            html.replace(pos, placeholder.length(), "");
+            return;
+        }
+        html.replace(pos, placeholder.length(), "<div class=\"error-message\" id=\"error-message\">" + to_string(massege) + "</div>");
+    }
+}

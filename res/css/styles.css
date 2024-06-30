@@ -435,3 +435,12 @@ main {
     background-color: #fff;
     box-shadow: 0 0 10px rgba(0,0,0,.1)
 }
+
+.error-message {
+    color: #ff0000;
+    background-color: #ffe6e6;
+    border: 1px solid #ff0000;
+    border-radius: 3px;
+    padding: 10px;
+    margin-bottom: 15px;
+}

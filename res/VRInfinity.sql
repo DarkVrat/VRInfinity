@@ -110,6 +110,16 @@ CREATE TABLE IF NOT EXISTS `vrinfinity`.`game` (
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE)
 ENGINE = InnoDB;
 
+-- -----------------------------------------------------
+-- Table `vrinfinity`.`game`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `vrinfinity`.`reset_password` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `email` VARCHAR(127) NOT NULL,
+  `new_password` VARCHAR(127) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE)
+ENGINE = InnoDB;
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

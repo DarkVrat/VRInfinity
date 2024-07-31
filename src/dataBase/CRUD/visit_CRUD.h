@@ -6,29 +6,28 @@
 
 namespace DB
 {
-    class VisitsCRUD
+    class visit_CRUD
     {
     public:
-        VisitsCRUD(DBController* dbController) :m_dbController(dbController) {}
+        visit_CRUD(DBController* dbController) :m_dbController(dbController) {}
 
         static std::vector<visit> getAllVisitsByEmail(DBController* dbController, const std::string& email)
         {
             std::vector<visit> visits;
             try
             {
-                nanodbc::statement stmt(dbController->statement("SELECT id, name, surname, email, start, end, service FROM visit WHERE email = ?;"));
+                nanodbc::statement stmt(dbController->statement("SELECT id, name, surname, phone, start, service_id FROM visit WHERE email = ?;"));
                 stmt.bind(0, email.c_str());
                 nanodbc::result results = execute(stmt);
 
                 while (results.next()) {
                     visit Visit;
-                    Visit.setID(results.get<uint32_t>(0));
+                    Visit.setId(results.get<uint32_t>(0));
                     Visit.setName(results.get<std::string>(1));
                     Visit.setSurname(results.get<std::string>(2));
-                    Visit.setEmail(results.get<std::string>(3));
+                    Visit.setPhone(results.get<std::string>(3));
                     Visit.setStart(results.get<std::string>(4));
-                    Visit.setEnd(results.get<std::string>(5));
-                    Visit.setService(results.get<std::string>(6));
+                    Visit.setServiceId(results.get<uint32_t>(5));
 
                     visits.push_back(std::move(Visit));
                 }
@@ -45,18 +44,17 @@ namespace DB
             std::vector<visit> visits;
             try
             {
-                nanodbc::statement stmt(dbController->statement("SELECT id, name, surname, email, start, end, service FROM visit;"));
+                nanodbc::statement stmt(dbController->statement("SELECT id, name, surname, phone, start, service_id FROM visit;"));
                 nanodbc::result results = execute(stmt);
 
                 while (results.next()) {
                     visit Visit;
-                    Visit.setID(results.get<uint32_t>(0));
+                    Visit.setId(results.get<uint32_t>(0));
                     Visit.setName(results.get<std::string>(1));
                     Visit.setSurname(results.get<std::string>(2));
-                    Visit.setEmail(results.get<std::string>(3));
+                    Visit.setPhone(results.get<std::string>(3));
                     Visit.setStart(results.get<std::string>(4));
-                    Visit.setEnd(results.get<std::string>(5));
-                    Visit.setService(results.get<std::string>(6));
+                    Visit.setServiceId(results.get<uint32_t>(5));
 
                     visits.push_back(std::move(Visit));
                 }
@@ -73,18 +71,17 @@ namespace DB
             visit Visit;
             try
             {
-                nanodbc::statement stmt(dbController->statement("SELECT id, name, surname, email, start, end, service FROM visit WHERE id = ?;"));
+                nanodbc::statement stmt(dbController->statement("SELECT id, name, surname, phone, start, service_id FROM visit WHERE id = ?;"));
                 stmt.bind(0, &id);
                 nanodbc::result results = execute(stmt);
 
                 if (results.next()) {
-                    Visit.setID(results.get<uint32_t>(0));
+                    Visit.setId(results.get<uint32_t>(0));
                     Visit.setName(results.get<std::string>(1));
                     Visit.setSurname(results.get<std::string>(2));
-                    Visit.setEmail(results.get<std::string>(3));
+                    Visit.setPhone(results.get<std::string>(3));
                     Visit.setStart(results.get<std::string>(4));
-                    Visit.setEnd(results.get<std::string>(5));
-                    Visit.setService(results.get<std::string>(6));
+                    Visit.setServiceId(results.get<uint32_t>(5));
                 }
             }
             catch (const nanodbc::database_error& e)
@@ -98,13 +95,12 @@ namespace DB
         {
             try
             {
-                nanodbc::statement stmt(dbController->statement("INSERT INTO visit (name, surname, email, start, end, service) VALUES (?, ?, ?, ?, ?, ?);"));
+                nanodbc::statement stmt(dbController->statement("INSERT INTO visit (name, surname, phone, start, service_id) VALUES (?, ?, ?, ?, ?);"));
                 stmt.bind(0, Visit.getName().c_str());
                 stmt.bind(1, Visit.getSurname().c_str());
-                stmt.bind(2, Visit.getEmail().c_str());
+                stmt.bind(2, Visit.getPhone().c_str());
                 stmt.bind(3, Visit.getStart().c_str());
-                stmt.bind(4, Visit.getEnd().c_str());
-                stmt.bind(5, Visit.getService().c_str());
+                stmt.bind(4, &Visit.getServiceId());
                 nanodbc::execute(stmt);
             }
             catch (const nanodbc::database_error& e)
@@ -119,14 +115,13 @@ namespace DB
         {
             try
             {
-                nanodbc::statement stmt(dbController->statement("UPDATE visit SET name = ?, surname = ?, email = ?, start = ?, end = ?, service = ? WHERE id = ?;"));
+                nanodbc::statement stmt(dbController->statement("UPDATE visit SET name = ?, surname = ?, phone ?, start = ?, service_id = ? WHERE id = ?;"));
                 stmt.bind(0, Visit.getName().c_str());
                 stmt.bind(1, Visit.getSurname().c_str());
-                stmt.bind(2, Visit.getEmail().c_str());
+                stmt.bind(2, Visit.getPhone().c_str());
                 stmt.bind(3, Visit.getStart().c_str());
-                stmt.bind(4, Visit.getEnd().c_str());
-                stmt.bind(5, Visit.getService().c_str());
-                stmt.bind(6, &Visit.getID());
+                stmt.bind(4, &Visit.getServiceId());
+                stmt.bind(5, &Visit.getId());
                 nanodbc::execute(stmt);
             }
             catch (const nanodbc::database_error& e)

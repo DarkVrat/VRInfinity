@@ -6,10 +6,10 @@
 
 namespace DB
 {
-    class newsCRUD
+    class news_CRUD
     {
     public:
-        newsCRUD(DBController* dbController) :m_dbController(dbController) {}
+        news_CRUD(DBController* dbController) :m_dbController(dbController) {}
 
         static std::vector<news> getAllNewses(DBController* dbController)
         {
@@ -21,13 +21,13 @@ namespace DB
 
                 while (results.next()) {
                     news News;
-                    News.setID(results.get<uint32_t>(0));
+                    News.setId(results.get<uint32_t>(0));
                     News.setTime(results.get<std::string>(1));
                     News.setSubject(results.get<std::string>(2));
-                    News.setTextNewsID(results.get<uint32_t>(3));
-                    News.setImageNewsID(results.get<int32_t>(4));
+                    News.setTextNewsId(results.get<uint32_t>(3));
+                    News.setImageNewsId(results.get<uint32_t>(4));
 
-                    newses.push_back(std::move(News));          // image_news_id
+                    newses.push_back(std::move(News));          
                 }
             }
             catch (const nanodbc::database_error& e)
@@ -47,11 +47,11 @@ namespace DB
                 nanodbc::result results = execute(stmt);
 
                 if (results.next()) {
-                    News.setID(results.get<uint32_t>(0));
+                    News.setId(results.get<uint32_t>(0));
                     News.setTime(results.get<std::string>(1));
                     News.setSubject(results.get<std::string>(2));
-                    News.setTextNewsID(results.get<uint32_t>(3));
-                    News.setImageNewsID(results.get<int32_t>(4));
+                    News.setTextNewsId(results.get<uint32_t>(3));
+                    News.setImageNewsId(results.get<uint32_t>(4));
                 }
             }
             catch (const nanodbc::database_error& e)
@@ -68,8 +68,8 @@ namespace DB
                 nanodbc::statement stmt(dbController->statement("INSERT INTO news (time, subject, text_news_id, image_news_id) VALUES (?, ?, ?, ?);"));
                 stmt.bind(0, News.getTime().c_str());
                 stmt.bind(1, News.getSubject().c_str());
-                stmt.bind(2, &News.getTextNewsID());
-                stmt.bind(3, &News.getImageNewsID());
+                stmt.bind(2, &News.getTextNewsId());
+                stmt.bind(3, &News.getImageNewsId());
                 nanodbc::execute(stmt);
             }
             catch (const nanodbc::database_error& e)
@@ -87,9 +87,9 @@ namespace DB
                 nanodbc::statement stmt(dbController->statement("UPDATE news SET time = ?, subject = ?, text_news_id = ?, image_news_id = ? WHERE id = ?;"));
                 stmt.bind(0, News.getTime().c_str());
                 stmt.bind(1, News.getSubject().c_str());
-                stmt.bind(2, &News.getTextNewsID());
-                stmt.bind(3, &News.getImageNewsID());
-                stmt.bind(4, &News.getID());
+                stmt.bind(2, &News.getTextNewsId());
+                stmt.bind(3, &News.getImageNewsId());
+                stmt.bind(4, &News.getId());
                 nanodbc::execute(stmt);
             }
             catch (const nanodbc::database_error& e)

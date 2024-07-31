@@ -424,7 +424,7 @@ int main(int argc, char** argv)
 
         res.set_header("Content-Type", "text/html");
         res.write(html);
-        res.end();
+        res.end(); 
     });
 
     CROW_ROUTE(app, "/booking2").methods("POST"_method)

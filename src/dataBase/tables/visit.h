@@ -8,35 +8,32 @@ namespace DB
     {
     public:
         // Constructors
-        visit() : m_ID(0), m_name(""), m_surname(""), m_email(""), m_start(""), m_end(""), m_service(""){}
-        visit(uint32_t id, std::string name, std::string surname, std::string email, std::string start, std::string end, std::string service)
-            : m_ID(id), m_name(""), m_surname(""), m_email(""), m_start(start), m_end(end), m_service("") {}
+        visit() : m_id(0), m_name(""), m_surname(""), m_phone(""), m_start(""), m_service_id(0){}
+        visit(uint32_t id, const std::string& name, const std::string& surname, const std::string& phone, const std::string& start, uint32_t service_id)
+            : m_id(id), m_name(name), m_surname(surname), m_phone(phone), m_start(start), m_service_id(service_id) {}
 
         // Get
-        const uint32_t& getID()         const { return m_ID;        }
-        const std::string& getName()    const { return m_name;      }
-        const std::string& getSurname() const { return m_surname;   }
-        const std::string& getEmail()   const { return m_email;     }
-        const std::string& getStart()   const { return m_start;     }
-        const std::string& getEnd()     const { return m_end;       }
-        const std::string& getService() const { return m_service;   }
+        const uint32_t& getId()         const   { return m_id;          }
+        const std::string& getName()    const   { return m_name;        }
+        const std::string& getSurname() const   { return m_surname;     }
+        const std::string& getPhone()   const   { return m_phone;       }
+        const std::string& getStart()   const   { return m_start;       }
+        const uint32_t& getServiceId()  const   { return m_service_id;  }
 
         // Set
-        void setID      (uint32_t id)                   { m_ID = id;            }
-        void setName    (const std::string& name)       { m_name = name;        }
-        void setSurname (const std::string& surname)    { m_surname = surname;  }
-        void setEmail   (const std::string& email)      { m_email = email;      }
-        void setStart   (const std::string& start)      { m_start = start;      }
-        void setEnd     (const std::string& end)        { m_end = end;          }
-        void setService (const std::string& service)    { m_service = service;  }
+        void setId(uint32_t id)                     { m_id = id;                }
+        void setName(const std::string& name)       { m_name = name;            }
+        void setSurname(const std::string& surname) { m_surname = surname;      }
+        void setPhone(const std::string& phone)     { m_phone = phone;          }
+        void setStart(const std::string& start)     { m_start = start;          }
+        void setServiceId(uint32_t service_id)      { m_service_id = service_id;}
 
     private:
-        uint32_t m_ID;
+        uint32_t    m_id;
         std::string m_name;
         std::string m_surname;
-        std::string m_email;
+        std::string m_phone;
         std::string m_start;
-        std::string m_end;
-        std::string m_service;
+        uint32_t    m_service_id;
     };
 }

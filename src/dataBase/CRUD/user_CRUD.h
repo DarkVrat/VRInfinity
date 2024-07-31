@@ -6,23 +6,23 @@
 
 namespace DB
 {
-	class usersCRUD
+	class user_CRUD
 	{
 	public:
-        usersCRUD(DBController* dbController) :m_dbController(dbController) {}
+        user_CRUD(DBController* dbController) :m_dbController(dbController) {}
           
         static std::vector<user> getAllUsers(DBController* dbController)
         {
             std::vector<user> users;
             try
             {
-                nanodbc::statement stmt(dbController->statement("SELECT id, email, password_hash, name, surname, role FROM user;"));
+                nanodbc::statement stmt(dbController->statement("SELECT id, phone, password_hash, name, surname, role FROM user;"));
                 nanodbc::result results = execute(stmt);
 
                 while (results.next()) {
                     user User;
-                    User.setID(results.get<uint32_t>(0));
-                    User.setEmail(results.get<std::string>(1));
+                    User.setId(results.get<uint32_t>(0));
+                    User.setPhone(results.get<std::string>(1));
                     User.setPasswordHash(results.get<std::string>(2));
                     User.setName(results.get<std::string>(3));
                     User.setSurname(results.get<std::string>(4));
@@ -43,13 +43,13 @@ namespace DB
             user User;
             try
             {
-                nanodbc::statement stmt(dbController->statement("SELECT id, email, password_hash, name, surname, role FROM user WHERE id = ?;"));
+                nanodbc::statement stmt(dbController->statement("SELECT id, phone, password_hash, name, surname, role FROM user WHERE id = ?;"));
                 stmt.bind(0, &id);
                 nanodbc::result results = execute(stmt);
 
                 if (results.next()) {
-                    User.setID(results.get<uint32_t>(0));
-                    User.setEmail(results.get<std::string>(1));
+                    User.setId(results.get<uint32_t>(0));
+                    User.setPhone(results.get<std::string>(1));
                     User.setPasswordHash(results.get<std::string>(2));
                     User.setName(results.get<std::string>(3));
                     User.setSurname(results.get<std::string>(4));
@@ -68,13 +68,13 @@ namespace DB
             user User;
             try
             {
-                nanodbc::statement stmt(dbController->statement("SELECT id, email, password_hash, name, surname, role FROM user WHERE email = ?;"));
+                nanodbc::statement stmt(dbController->statement("SELECT id, phone, password_hash, name, surname, role FROM user WHERE phone = ?;"));
                 stmt.bind(0, email.c_str());
                 nanodbc::result results = execute(stmt);
 
                 if (results.next()) {
-                    User.setID(results.get<uint32_t>(0));
-                    User.setEmail(results.get<std::string>(1));
+                    User.setId(results.get<uint32_t>(0));
+                    User.setPhone(results.get<std::string>(1));
                     User.setPasswordHash(results.get<std::string>(2));
                     User.setName(results.get<std::string>(3));
                     User.setSurname(results.get<std::string>(4));
@@ -92,8 +92,8 @@ namespace DB
         {
             try
             {
-                nanodbc::statement stmt(dbController->statement("INSERT INTO user (email, password_hash, name, surname, role) VALUES (?, ?, ?, ?, ?);"));
-                stmt.bind(0, User.getEmail().c_str());
+                nanodbc::statement stmt(dbController->statement("INSERT INTO user (phone, password_hash, name, surname, role) VALUES (?, ?, ?, ?, ?);"));
+                stmt.bind(0, User.getPhone().c_str());
                 stmt.bind(1, User.getPasswordHash().c_str());
                 stmt.bind(2, User.getName().c_str());
                 stmt.bind(3, User.getSurname().c_str());
@@ -112,13 +112,13 @@ namespace DB
         {
             try
             {
-                nanodbc::statement stmt(dbController->statement("UPDATE user SET email = ?, password_hash = ?, name = ?, surname = ?, role = ? WHERE id = ?;"));
-                stmt.bind(0, User.getEmail().c_str());
+                nanodbc::statement stmt(dbController->statement("UPDATE user SET phone = ?, password_hash = ?, name = ?, surname = ?, role = ? WHERE id = ?;"));
+                stmt.bind(0, User.getPhone().c_str());
                 stmt.bind(1, User.getPasswordHash().c_str());
                 stmt.bind(2, User.getName().c_str());
                 stmt.bind(3, User.getSurname().c_str());
                 stmt.bind(4, User.getRole().c_str());
-                stmt.bind(5, &User.getID());
+                stmt.bind(5, &User.getId());
                 nanodbc::execute(stmt);
             }
             catch (const nanodbc::database_error& e)

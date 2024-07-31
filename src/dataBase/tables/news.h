@@ -7,30 +7,30 @@ namespace DB
     class news
     {
     public:
-        news() : m_ID(0), m_time(""), m_subject(""), m_textNewsID(0), m_imageNewsID(0) {}
-        news(uint32_t id, std::string time, std::string subject, uint32_t textNewsID, int32_t imageNewsID)
-            : m_ID(id), m_time(time), m_subject(subject), m_textNewsID(textNewsID), m_imageNewsID(imageNewsID) {}
+        news() : m_id(0), m_time(""), m_subject(""), m_text_news_id(0), m_image_news_id(0) {}
+        news(uint32_t id, const std::string& time, const std::string& subject, uint32_t text_news_id, uint32_t image_news_id)
+            : m_id(id), m_time(time), m_subject(subject), m_text_news_id(text_news_id), m_image_news_id(image_news_id) {}
 
         // Get
-        const uint32_t& getID()             const { return m_ID; }
-        const std::string& getTime()        const { return m_time; }
-        const std::string& getSubject()     const { return m_subject; }
-        const uint32_t& getTextNewsID()     const { return m_textNewsID; }
-        const int32_t& getImageNewsID()     const { return m_imageNewsID; }
+        const uint32_t& getId()             const { return m_id;            }
+        const std::string& getTime()        const { return m_time;          }
+        const std::string& getSubject()     const { return m_subject;       }
+        const uint32_t& getTextNewsId()     const { return m_text_news_id;  }
+        const uint32_t& getImageNewsId()    const { return m_image_news_id; }
 
         // Set
-        void setID(uint32_t id) { m_ID = id; }
-        void setTime(const std::string& time) { m_time = time; }
-        void setSubject(const std::string& subject) { m_subject = subject; }
-        void setTextNewsID(uint32_t textNewsID) { m_textNewsID = textNewsID; }
-        void setImageNewsID(int32_t imageNewsID) { m_imageNewsID = imageNewsID; }
+        void setId(uint32_t id)                     { m_id = id;                        }
+        void setTime(const std::string& time)       { m_time = time;                    }
+        void setSubject(const std::string& subject) { m_subject = subject;              }
+        void setTextNewsId(uint32_t text_news_id)   { m_text_news_id = text_news_id;    }
+        void setImageNewsId(uint32_t image_news_id) { m_image_news_id = image_news_id;  }
 
     private:
-        uint32_t m_ID;
+        uint32_t    m_id;
         std::string m_time;
         std::string m_subject;
-        uint32_t m_textNewsID;
-        int32_t m_imageNewsID;
+        uint32_t    m_text_news_id;
+        uint32_t    m_image_news_id;
     };
 
 }

@@ -1,6 +1,6 @@
-DRIVER={MySQL ODBC 8.4 Unicode Driver};
+DRIVER={MySQL ODBC 9.0 Unicode Driver};
 SERVER=localhost;
 PORT=3306;
 USER=root;
-PASSWORD=;
+PASSWORD=root;
 DATABASE=vrinfinity;

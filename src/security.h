@@ -100,10 +100,10 @@ std::string createHmac(const std::string& key, const std::string& data) {
     return result;
 }
 
-std::string generateToken(const std::string& name, const std::string& surname, const std::string& email, const std::string& role) {
+std::string generateToken(const std::string& name, const std::string& surname, const std::string& phone, const std::string& role) {
     std::string secretKey = "Q2t7HE9lfdIB";
     time_t now = time(0);
-    std::string payload = name + ":" + surname + ":" + email + ":" + role + ":" + std::to_string(now);
+    std::string payload = name + ":" + surname + ":" + phone + ":" + role + ":" + std::to_string(now);
 
     std::string signature = createHmac(secretKey, payload);
 

@@ -8,7 +8,7 @@
 enum TokenField {
     NAME = 0,
     SURNAME = 1,
-    EMAIL = 2,
+    PHONE = 2,
     ROLE = 3
 };
 
@@ -69,4 +69,34 @@ std::string url_decode(const std::string& value) {
     }
 
     return result;
+}
+
+void decodePhone(std::string& str) {
+    static const std::unordered_map<std::string, char> urlCodes = {
+        {"%2B", '+'},
+        {"%28", '('},
+        {"%29", ')'}
+    };
+
+    std::string decodedStr;
+    for (size_t i = 0; i < str.length(); ++i) {
+        if (str[i] == '%' && i + 2 < str.length()) {
+            std::string code = str.substr(i, 3);
+            if (urlCodes.find(code) != urlCodes.end()) {
+                decodedStr += urlCodes.at(code);
+                i += 2;
+            }
+            else {
+                decodedStr += str[i];
+            }
+        }
+        else if (str[i] == '+') {
+            decodedStr += ' ';
+        }
+        else {
+            decodedStr += str[i];
+        }
+    }
+
+    str = decodedStr;
 }

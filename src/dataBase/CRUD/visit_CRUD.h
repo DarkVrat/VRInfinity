@@ -11,13 +11,13 @@ namespace DB
     public:
         visit_CRUD(DBController* dbController) :m_dbController(dbController) {}
 
-        static std::vector<visit> getAllVisitsByEmail(DBController* dbController, const std::string& email)
+        static std::vector<visit> getAllVisitsByPhone(DBController* dbController, const std::string& phone)
         {
             std::vector<visit> visits;
             try
             {
-                nanodbc::statement stmt(dbController->statement("SELECT id, name, surname, phone, start, service_id FROM visit WHERE email = ?;"));
-                stmt.bind(0, email.c_str());
+                nanodbc::statement stmt(dbController->statement("SELECT id, name, surname, phone, start, service_id FROM visit WHERE phone = ?;"));
+                stmt.bind(0, phone.c_str());
                 nanodbc::result results = execute(stmt);
 
                 while (results.next()) {
@@ -148,7 +148,7 @@ namespace DB
             return true;
         }
 
-        inline std::vector<visit> getAllVisitsByEmail(const std::string& email) { return getAllVisitsByEmail(m_dbController, email); }
+        inline std::vector<visit> getAllVisitsByPhone(const std::string& phone) { return getAllVisitsByPhone(m_dbController, phone); }
         inline std::vector<visit> getAllVisits()        { return getAllVisits(m_dbController);      }
         inline visit    getVisitByID(uint32_t id)       { return getVisitByID(m_dbController, id);  }
         inline bool     createVisit(const visit& Visit) { return createVisit(m_dbController, Visit); }

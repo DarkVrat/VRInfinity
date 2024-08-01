@@ -10,9 +10,9 @@
 #include <cstdint>
 #include <nanodbc/nanodbc.h>
 
-#include "dataBase/CRUD/userCRUD.h"
-#include "dataBase/CRUD/newsCRUD.h"
-#include "dataBase/CRUD/resetPasswordCRUD.h"
+#include "dataBase/CRUD/user_CRUD.h"
+#include "dataBase/CRUD/news_CRUD.h"
+#include "dataBase/CRUD/reset_password_CRUD.h"
 #include "dataBase/DBController.h"
 #include "security.h"
 #include "parser.h"
@@ -162,15 +162,15 @@ int main(int argc, char** argv)
         std::string token = getAuthToken(req);
         std::string html = readFile("res/catalog_games.html");
         genLoginState(html, verifyToken(token));
-
+         
         DBController dbController(readFile("res/DBConfig.txt"));
-        genGames(html, &dbController, page_number);
+        genGames(html, &dbController, page_number); 
 
         res.set_header("Content-Type", "text/html");
         res.write(html);
         res.end();
     });
-
+     
     CROW_ROUTE(app, "/login").methods("GET"_method)
         ([](const crow::request& req, crow::response& res) {
         std::string token = getAuthToken(req);
@@ -186,20 +186,16 @@ int main(int argc, char** argv)
     CROW_ROUTE(app, "/login").methods("POST"_method)
         ([](const crow::request& req, crow::response& res) {
         std::string body = req.body;
-        std::string email = getValue(body, "email");
+        std::string phone = getValue(body, "phone");
         std::string password = getValue(body, "password");
-
-        std::string placeholder = "%40";
-        size_t pos = email.find(placeholder);
-        if (pos != std::string::npos)
-            email.replace(pos, placeholder.length(), "@");
+        decodePhone(phone); 
 
         DBController dbCon(readFile("res/DBConfig.txt"));
-        user USER = usersCRUD::getUserByEmail(&dbCon, email);
+        user USER = user_CRUD::getUserByPhone(&dbCon, phone);
 
         if (USER.getPasswordHash() == hashPassword(password))
         {
-            std::string token = generateToken(USER.getName(), USER.getSurname(), USER.getEmail(), USER.getRole());
+            std::string token = generateToken(USER.getName(), USER.getSurname(), USER.getPhone(), USER.getRole());
             setAuthToken(res, token);
             res.redirect("/");
             res.end();
@@ -246,26 +242,22 @@ int main(int argc, char** argv)
         std::string body = req.body;
         std::string name = getValue(body, "name");
         std::string surname = getValue(body, "surname");
-        std::string email = getValue(body, "email");
-        std::string password = getValue(body, "password");
-
-        std::string placeholder = "%40";
-        size_t pos = email.find(placeholder);   
-        if (pos != std::string::npos)
-            email.replace(pos, placeholder.length(), "@");
+        std::string phone = getValue(body, "phone");
+        std::string password = getValue(body, "password");;
+        decodePhone(phone);
 
         std::string token = getAuthToken(req);
 
         DBController dbCon(readFile("res/DBConfig.txt"));
-        user USER = usersCRUD::getUserByEmail(&dbCon, parseToken(token, TokenField::EMAIL));
+        user USER = user_CRUD::getUserByPhone(&dbCon, parseToken(token, TokenField::PHONE));
 
         if (name != "")     USER.setName(url_decode(name));
         if (surname != "")  USER.setSurname(url_decode(surname));
-        if (email != "")    USER.setEmail(email);
+        if (phone != "")    USER.setPhone(phone);
         if (password != "") USER.setPasswordHash(hashPassword(password));
-        usersCRUD::updateUser(&dbCon, USER);
+        user_CRUD::updateUser(&dbCon, USER);
 
-        token = generateToken(USER.getName(), USER.getSurname(), USER.getEmail(), USER.getRole());
+        token = generateToken(USER.getName(), USER.getSurname(), USER.getPhone(), USER.getRole());
         setAuthToken(res, token);
         res.redirect("/");
         res.end();
@@ -295,22 +287,18 @@ int main(int argc, char** argv)
         std::string body = req.body;
         std::string name = url_decode(getValue(body, "name"));
         std::string surname = url_decode(getValue(body, "surname"));
-        std::string email = getValue(body, "email");
+        std::string phone = getValue(body, "phone"); 
         std::string password = getValue(body, "password");
-
-        std::string placeholder = "%40";
-        size_t pos = email.find(placeholder);
-        if (pos != std::string::npos)
-            email.replace(pos, placeholder.length(), "@");
+        decodePhone(phone);
 
         DBController dbCon(readFile("res/DBConfig.txt"));
-        user USER_check = usersCRUD::getUserByEmail(&dbCon, email);
+        user USER_check = user_CRUD::getUserByPhone(&dbCon, phone);
 
-        if (USER_check.getID() == 0) {
-            user USER(0, email, hashPassword(password), name, surname);
-            usersCRUD::createUser(&dbCon, USER);
-
-            std::string token = generateToken(name, surname, email, "USER");
+        if (USER_check.getId() == 0) { 
+            user USER(0, phone, hashPassword(password), name, surname);
+            user_CRUD::createUser(&dbCon, USER); // не создавать куки при ошибке в БД
+            
+            std::string token = generateToken(name, surname, phone, "USER");
             setAuthToken(res, token);
             res.redirect("/");
             res.end();
@@ -343,17 +331,13 @@ int main(int argc, char** argv)
     CROW_ROUTE(app, "/reset_password").methods("POST"_method)
         ([](const crow::request& req, crow::response& res) {
         std::string body = req.body;
-        std::string email = getValue(body, "email");
-
-        std::string placeholder = "%40";
-        size_t pos = email.find(placeholder);
-        if (pos != std::string::npos)
-            email.replace(pos, placeholder.length(), "@");
+        std::string phone = getValue(body, "phone");
+        decodePhone(phone);
 
         DBController dbCon(readFile("res/DBConfig.txt"));
-        user USER_check = usersCRUD::getUserByEmail(&dbCon, email);
+        user USER_check = user_CRUD::getUserByPhone(&dbCon, phone);
 
-        if (USER_check.getID() == 0) {
+        if (USER_check.getId() == 0) {
             std::string token = getAuthToken(req);
             std::string html = readFile("res/reset_password.html");
             genLoginState(html, verifyToken(token));
@@ -372,10 +356,10 @@ int main(int argc, char** argv)
             std::string new_password = generatePassword(12);
 
             USER_check.setPasswordHash(hashPassword(new_password));
-            usersCRUD::updateUser(&dbCon, USER_check);
+            user_CRUD::updateUser(&dbCon, USER_check);
 
-            resetPassword rp(0, email, new_password);
-            resetPasswordCRUD::createResetPassword(&dbCon, rp);
+            reset_password rp(0, phone, new_password);
+            reset_password_CRUD::createResetPassword(&dbCon, rp);
 
             res.set_header("Content-Type", "text/html");
             res.write(html);
@@ -402,15 +386,11 @@ int main(int argc, char** argv)
         std::string body = req.body;
         std::string name = url_decode(getValue(body, "name"));
         std::string surname = url_decode(getValue(body, "surname"));
-        std::string email = getValue(body, "email");
+        std::string phone = getValue(body, "phone");
         std::string service = getValue(body, "service");
+        decodePhone(phone);
 
-        std::string placeholder = "%40";
-        size_t pos = email.find(placeholder);
-        if (pos != std::string::npos)
-            email.replace(pos, placeholder.length(), "@");
-
-        res.add_header("Set-Cookie", "booking=" + name + ":" + surname + ":" + email + ":" + service + "; Path=/; Max-Age=" + std::to_string(60 * 5));
+        res.add_header("Set-Cookie", "booking=" + name + ":" + surname + ":" + phone + ":" + service + "; Path=/; Max-Age=" + std::to_string(60 * 60));
         res.write("Cookie set successfully");
         res.redirect("/booking2");
         res.end();

@@ -63,13 +63,13 @@ namespace DB
             return User;
         }
 
-        static user getUserByEmail(DBController* dbController, const std::string& email)
+        static user getUserByPhone(DBController* dbController, const std::string& phone)
         {
             user User;
             try
             {
                 nanodbc::statement stmt(dbController->statement("SELECT id, phone, password_hash, name, surname, role FROM user WHERE phone = ?;"));
-                stmt.bind(0, email.c_str());
+                stmt.bind(0, phone.c_str());
                 nanodbc::result results = execute(stmt);
 
                 if (results.next()) {
@@ -147,7 +147,7 @@ namespace DB
 
         inline std::vector<user> getAllUsers()                      { return getAllUsers(m_dbController);           }
         inline user     getUserByID(uint32_t id)                    { return getUserByID(m_dbController, id);       }
-        inline user     getUserByEmail(const std::string& email)    { return getUserByEmail(m_dbController, email); }
+        inline user     getUserByPhone(const std::string& phone)    { return getUserByPhone(m_dbController, phone); }
         inline bool     createUser(const user& User)                { return createUser(m_dbController, User);      }
         inline bool     updateUser(const user& User)                { return updateUser(m_dbController, User);      }
         inline bool     deleteUser(uint32_t id)                     { return deleteUser(m_dbController, id);        }

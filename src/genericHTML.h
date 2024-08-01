@@ -6,11 +6,12 @@
 #include <codecvt>
 
 #include "parser.h"
-#include "dataBase/CRUD/visitCRUD.h"
-#include "dataBase/CRUD/gameCRUD.h"
-#include "dataBase/CRUD/newsCRUD.h"
-#include "dataBase/CRUD/textNewsCRUD.h"
-#include "dataBase/CRUD/imageNewsCRUD.h"
+#include "dataBase/CRUD/visit_CRUD.h"
+#include "dataBase/CRUD/game_vr_CRUD.h"
+#include "dataBase/CRUD/news_CRUD.h"
+#include "dataBase/CRUD/text_news_CRUD.h"
+#include "dataBase/CRUD/image_news_CRUD.h"
+#include "dataBase/CRUD/service_CRUD.h"
 
 using namespace DB;
 
@@ -40,19 +41,23 @@ void genAccountHTML(std::string& html, const std::string& authCookie, DBControll
     if (pos != std::string::npos)
         html.replace(pos, placeholder.length(), parseToken(authCookie, SURNAME));
 
-    std::string email = parseToken(authCookie, EMAIL);
-    placeholder = "PLACE_FOR_EMAIL";
+    std::string phone = parseToken(authCookie, PHONE);
+    placeholder = "PLACE_FOR_PHONE";
     pos = html.find(placeholder);
     if (pos != std::string::npos)
-        html.replace(pos, placeholder.length(), email);
+        html.replace(pos, placeholder.length(), phone);
 
+    //Переделать
     placeholder = "PLACE_FOR_TBODY";
     pos = html.find(placeholder);
     if (pos != std::string::npos) {
-        std::vector<visit> visits = VisitsCRUD::getAllVisitsByEmail(dbController, email);
+        std::vector<visit> visits = visit_CRUD::getAllVisitsByPhone(dbController, phone);
         std::string table = "";
-        for (const auto& vis : visits)
-            table += "<tr><td>" + vis.getStart() + "</td><td>" + vis.getService() + "</td></tr>";
+        for (const auto& vis : visits) 
+        {
+            service Service = service_CRUD::getServiceByID(dbController, vis.getServiceId());
+            table += "<tr><td>" + vis.getStart() + "</td><td>" + Service.getName() + "</td></tr>";
+        }
         html.replace(pos, placeholder.length(), table);
     }
 }
@@ -84,7 +89,7 @@ void genPages(std::string& html, const std::string& page, uint32_t maxPage, uint
 
 void genGames(std::string& html, DBController* dbController, uint32_t page)
 {
-    auto stmt = dbController->statement("SELECT MAX(id) FROM game;");
+    auto stmt = dbController->statement("SELECT MAX(id) FROM game_vr;");
     auto result = nanodbc::execute(stmt);
     int max_id = 0;
     if (result.next()) {
@@ -104,7 +109,7 @@ void genGames(std::string& html, DBController* dbController, uint32_t page)
 
         for (uint32_t id = start_id; id >= end_id && id > 0; --id)
         {
-            game GAME = gameCRUD::getGameByID(dbController, id);
+            game_vr GAME = game_vr_CRUD::getGameByID(dbController, id);
 
             result += "<div class=\"game-item\">";
             result +=   "<div class=\"game-info\">";
@@ -144,13 +149,13 @@ void genNews(std::string& html, DBController* dbController, uint32_t page)
 
         for (uint32_t id = start_id; id >= end_id && id > 0; --id)
         {
-            news NEWS = newsCRUD::getNewsByID(dbController, id);
-            imageNews image = imageNewsCRUD::getImageNewsByID(dbController, NEWS.getImageNewsID());
-            textNews text = textNewsCRUD::getTextNewsByID(dbController, NEWS.getTextNewsID());
+            news NEWS = news_CRUD::getNewsByID(dbController, id);
+            image_news image = image_news_CRUD::getImageNewsByID(dbController, NEWS.getImageNewsId());
+            text_news text = text_news_CRUD::getTextNewsByID(dbController, NEWS.getTextNewsId());
 
             result += "<section class=\"news-list\">";
             result +=   "<div class=\"news-item\">";
-            result +=       "<a href=\"/full_news?news=" + std::to_string(NEWS.getID()) + "\">";
+            result +=       "<a href=\"/full_news?news=" + std::to_string(NEWS.getId()) + "\">";
             result +=           "<img src=\"/image/" + image.getImage() + ".jpeg\" alt=\"News\">";
             result +=           "<div class=\"news-content\">";
             result +=               "<h2>" + NEWS.getSubject() + "</h2>";
@@ -168,7 +173,7 @@ void genNews(std::string& html, DBController* dbController, uint32_t page)
 
 void genFullNews(std::string& html, DBController* dbController, uint32_t id)
 {
-    news NEWS = newsCRUD::getNewsByID(dbController, id);
+    news NEWS = news_CRUD::getNewsByID(dbController, id);
     std::string placeholder = "PLACE_FOR_SUBJECT";
     size_t pos = html.find(placeholder);
     if (pos != std::string::npos)
@@ -184,11 +189,11 @@ void genFullNews(std::string& html, DBController* dbController, uint32_t id)
     if (pos != std::string::npos)
     {
         std::string allImg = "";
-        imageNews img = imageNewsCRUD::getImageNewsByID(dbController, NEWS.getImageNewsID());
+        image_news img = image_news_CRUD::getImageNewsByID(dbController, NEWS.getImageNewsId());
         allImg += "<div class=\"item\"><img src=\"/image/" + img.getImage() + ".jpeg\" alt=\"image\"></div>";
-        while (img.getNextID() != 0)
+        while (img.getNextId() != 0)
         {
-            img = imageNewsCRUD::getImageNewsByID(dbController, img.getNextID());
+            img = image_news_CRUD::getImageNewsByID(dbController, img.getNextId());
             allImg += "<div class=\"item\"><img src=\"/image/" + img.getImage() + ".jpeg\" alt=\"image\"></div>";
         }
 
@@ -200,11 +205,11 @@ void genFullNews(std::string& html, DBController* dbController, uint32_t id)
     if (pos != std::string::npos)
     {
         std::string fullText = "";
-        textNews text = textNewsCRUD::getTextNewsByID(dbController, NEWS.getTextNewsID());
+        text_news text = text_news_CRUD::getTextNewsByID(dbController, NEWS.getTextNewsId());
         fullText += text.getText();
-        while (text.getNextID() != 0)
+        while (text.getNextId() != 0)
         {
-            text = textNewsCRUD::getTextNewsByID(dbController, text.getNextID());
+            text = text_news_CRUD::getTextNewsByID(dbController, text.getNextId());
             fullText += text.getText();
         }
 

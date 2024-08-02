@@ -230,3 +230,19 @@ void genErrorMassege(std::string& html, const std::wstring& massege=L"")
         html.replace(pos, placeholder.length(), "<div class=\"error-message\" id=\"error-message\">" + to_string(massege) + "</div>");
     }
 }
+
+void genServices(std::string& html, DBController* dbController)
+{
+    std::string placeholder = "PLACE_FOR_SERVICES";
+    size_t pos = html.find(placeholder);
+    if (pos != std::string::npos)
+    {
+        std::string result = "";
+        std::vector<service> list = service_CRUD::getAllServices(dbController);
+
+        for (auto& serv: list)
+            result += "<option value=\"" + std::to_string(serv.getId()) + "\">" + serv.getName() + "</option>";
+
+        html.replace(pos, placeholder.length(), result);
+    }
+}

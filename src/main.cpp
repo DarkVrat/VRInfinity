@@ -367,7 +367,7 @@ int main(int argc, char** argv)
         }
     });
 
-    CROW_ROUTE(app, "/booking1").methods("GET"_method)
+    CROW_ROUTE(app, "/booking").methods("GET"_method)
         ([](const crow::request& req, crow::response& res) {
         std::string token = getAuthToken(req);
         std::string html = readFile("res/booking1.html");
@@ -375,6 +375,7 @@ int main(int argc, char** argv)
 
         DBController dbCon(readFile("res/DBConfig.txt"));
         genAccountHTML(html, token, &dbCon);
+        genServices(html, &dbCon); 
 
         res.set_header("Content-Type", "text/html"); 
         res.write(html);
@@ -391,20 +392,18 @@ int main(int argc, char** argv)
         decodePhone(phone);
 
         res.add_header("Set-Cookie", "booking=" + name + ":" + surname + ":" + phone + ":" + service + "; Path=/; Max-Age=" + std::to_string(60 * 60));
-        res.write("Cookie set successfully");
-        res.redirect("/booking2");
-        res.end();
-    });
 
-    CROW_ROUTE(app, "/booking2").methods("GET"_method)
-        ([](const crow::request& req, crow::response& res) {
         std::string token = getAuthToken(req);
         std::string html = readFile("res/booking2.html");
         genLoginState(html, verifyToken(token));
 
+        // Заполнение страницы записи
+        // реализовать функцию генерации минимальной и максимальной даты
+        // реализовать функцию просчёта свободных окон для записи
+
         res.set_header("Content-Type", "text/html");
         res.write(html);
-        res.end(); 
+        res.end();
     });
 
     CROW_ROUTE(app, "/booking2").methods("POST"_method)
@@ -413,9 +412,7 @@ int main(int argc, char** argv)
         std::string datepicker = getValue(body, "datepicker");
         std::string time = getValue(body, "time");
 
-        // реализовать функцию генерации минимальной и максимальной даты
-        // реализовать функцию просчёта свободных окон для записи
-        //реализовать логику записи
+        // реализовать логику записи
 
         res.redirect("/");
         res.end();

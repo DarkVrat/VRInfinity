@@ -58,6 +58,10 @@ std::string getAuthToken(const crow::request& req)
     return getValue(cookie_value, "token");
 }
 
+std::vector<std::string> getTimes(uint32_t service, const std::string& date) {
+    return { "10:00", "12:00", "14:00" };
+}
+
 int main(int argc, char** argv)
 {
     setExecutablePath(argv[0]);
@@ -370,7 +374,7 @@ int main(int argc, char** argv)
     CROW_ROUTE(app, "/booking").methods("GET"_method)
         ([](const crow::request& req, crow::response& res) {
         std::string token = getAuthToken(req);
-        std::string html = readFile("res/booking1.html");
+        std::string html = readFile("res/booking.html");
         genLoginState(html, verifyToken(token));
 
         DBController dbCon(readFile("res/DBConfig.txt"));
@@ -382,40 +386,48 @@ int main(int argc, char** argv)
         res.end();
     });
 
-    CROW_ROUTE(app, "/booking1").methods("POST"_method)
+    CROW_ROUTE(app, "/booking").methods("POST"_method)
         ([](const crow::request& req, crow::response& res) {
         std::string body = req.body;
         std::string name = url_decode(getValue(body, "name"));
         std::string surname = url_decode(getValue(body, "surname"));
         std::string phone = getValue(body, "phone");
         std::string service = getValue(body, "service");
+        std::string data = getValue(body, "datepicker");
+        std::string time = getValue(body, "time");
         decodePhone(phone);
 
-        res.add_header("Set-Cookie", "booking=" + name + ":" + surname + ":" + phone + ":" + service + "; Path=/; Max-Age=" + std::to_string(60 * 60));
 
-        std::string token = getAuthToken(req);
-        std::string html = readFile("res/booking2.html");
-        genLoginState(html, verifyToken(token));
+         
 
-        // Заполнение страницы записи
-        // реализовать функцию генерации минимальной и максимальной даты
-        // реализовать функцию просчёта свободных окон для записи
-
-        res.set_header("Content-Type", "text/html");
-        res.write(html);
+        res.redirect("/"); 
         res.end();
     });
 
-    CROW_ROUTE(app, "/booking2").methods("POST"_method)
-        ([](const crow::request& req, crow::response& res) {
-        std::string body = req.body;
-        std::string datepicker = getValue(body, "datepicker");
-        std::string time = getValue(body, "time");
+    CROW_ROUTE(app, "/get-available-times").methods(crow::HTTPMethod::POST)([](const crow::request& req) {
+        auto request_data = crow::json::load(req.body);
+        if (!request_data) {
+            return crow::response(400, "Invalid JSON");
+        }
 
-        // реализовать логику записи
+        uint32_t serviceId = request_data["serviceId"].i();
+        std::string date = request_data["date"].s();
 
-        res.redirect("/");
-        res.end();
+        std::vector<std::string> times = getTimes(serviceId, date);
+
+        std::string response_data = "{\"times\":[";
+        for (size_t i = 0; i < times.size(); ++i) {
+            response_data += "\"" + times[i] + "\"";
+            if (i < times.size() - 1) {
+                response_data += ",";
+            }
+        }
+        response_data += "]}";
+
+        crow::response res{ response_data };
+        res.add_header("Content-Type", "application/json");
+        return res;
+
     });
 
     app.port(18080).multithreaded().run();

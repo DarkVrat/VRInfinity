@@ -11,6 +11,37 @@ namespace DB
     public:
         visits_vr_CRUD(DBController* dbController) :m_dbController(dbController) {}
 
+        static std::vector<visits_vr> getVisitsVrInRange(DBController* dbController, const std::string& startDate, const std::string& endDate)
+        {
+            std::vector<visits_vr> visitsVrVec;
+            try
+            {
+                std::string query = "SELECT id, start, end, visit_id FROM visits_vr "
+                    "WHERE start >= ? AND end <= ?;";
+                nanodbc::statement stmt(dbController->statement(query));
+
+                stmt.bind(0, startDate.c_str());
+                stmt.bind(1, endDate.c_str());
+
+                nanodbc::result results = execute(stmt);
+
+                while (results.next()) {
+                    visits_vr VisitsVr;
+                    VisitsVr.setId(results.get<uint32_t>(0));
+                    VisitsVr.setStart(results.get<std::string>(1));
+                    VisitsVr.setEnd(results.get<std::string>(2));
+                    VisitsVr.setVisitId(results.get<uint32_t>(3));
+
+                    visitsVrVec.push_back(std::move(VisitsVr));
+                }
+            }
+            catch (const nanodbc::database_error& e)
+            {
+                std::cerr << "Database error: " << e.what() << std::endl;
+            }
+            return visitsVrVec;
+        }
+
         static std::vector<visits_vr> getAllVisitsVr(DBController* dbController)
         {
             std::vector<visits_vr> visitsVrVec;
@@ -112,6 +143,8 @@ namespace DB
             return true;
         }
 
+        inline std::vector<visits_vr> getVisitsVrInRange(const std::string& startDate, const std::string& endDate)          
+            { return getVisitsVrInRange(m_dbController, startDate, endDate); }
         inline std::vector<visits_vr> getAllVisitsVr()              { return getAllVisitsVr(m_dbController);            }  
         inline visits_vr  getVisitsVrByID(uint32_t id)              { return getVisitsVrByID(m_dbController, id);       }
         inline bool     createVisitsVr(const visits_vr& VisitsVr)   { return createVisitsVr(m_dbController, VisitsVr);  }

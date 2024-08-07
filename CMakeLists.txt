@@ -43,6 +43,7 @@ add_executable(${PROJECT}
 	src/security.h
 	src/parser.h
 	src/genericHTML.h
+	src/booking_logic.h
 	${DATABASE_HEADERS}
 	${DATABASE_SOURCE}
 	${TABLES_HEADERS}

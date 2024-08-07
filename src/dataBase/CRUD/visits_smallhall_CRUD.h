@@ -11,6 +11,37 @@ namespace DB
     public:
         visits_smallhall_CRUD(DBController* dbController) :m_dbController(dbController) {}
 
+        static std::vector<visits_smallhall> getVisitsSmallhallInRange(DBController* dbController, const std::string& startDate, const std::string& endDate)
+        {
+            std::vector<visits_smallhall> visitsSmallhallVec;
+            try
+            {
+                std::string query = "SELECT id, start, end, visit_id FROM visits_smallhall "
+                    "WHERE start >= ? AND end <= ?;";
+                nanodbc::statement stmt(dbController->statement(query));
+
+                stmt.bind(0, startDate.c_str());
+                stmt.bind(1, endDate.c_str());
+
+                nanodbc::result results = execute(stmt);
+
+                while (results.next()) {
+                    visits_smallhall VisitsSmallhall;
+                    VisitsSmallhall.setId(results.get<uint32_t>(0));
+                    VisitsSmallhall.setStart(results.get<std::string>(1));
+                    VisitsSmallhall.setEnd(results.get<std::string>(2));
+                    VisitsSmallhall.setVisitId(results.get<uint32_t>(3));
+
+                    visitsSmallhallVec.push_back(std::move(VisitsSmallhall));
+                }
+            }
+            catch (const nanodbc::database_error& e)
+            {
+                std::cerr << "Database error: " << e.what() << std::endl;
+            }
+            return visitsSmallhallVec;
+        }
+
         static std::vector<visits_smallhall> getAllVisitsSmallhall(DBController* dbController)
         {
             std::vector<visits_smallhall> visitsSmallhallVec;
@@ -112,6 +143,8 @@ namespace DB
             return true;
         }
 
+        inline std::vector<visits_smallhall> getVisitsSmallhallInRange(const std::string& startDate, const std::string& endDate)
+            { return getVisitsSmallhallInRange(m_dbController, startDate, endDate); }
         inline std::vector<visits_smallhall> getAllVisitsSmallhall()                    { return getAllVisitsSmallhall(m_dbController);                     }
         inline visits_smallhall  getVisitsSmallhallByID(uint32_t id)                    { return getVisitsSmallhallByID(m_dbController, id);                }
         inline bool     createVisitsSmallhall(const visits_smallhall& VisitsSmallhall)  { return createVisitsSmallhall(m_dbController, VisitsSmallhall);    }

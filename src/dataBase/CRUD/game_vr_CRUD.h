@@ -59,7 +59,7 @@ namespace DB
             return Game;
         }
 
-        static bool createGame(DBController* dbController, const game_vr& Game)
+        static uint32_t createGame(DBController* dbController, const game_vr& Game)
         {
             try
             {
@@ -68,13 +68,18 @@ namespace DB
                 stmt.bind(1, Game.getText().c_str());
                 stmt.bind(2, Game.getImage().c_str());
                 nanodbc::execute(stmt);
+
+                nanodbc::statement id_stmt(dbController->statement("SELECT LAST_INSERT_ID();"));
+                auto result = nanodbc::execute(id_stmt);
+                if (result.next())
+                    return result.get<int>(0);
             }
             catch (const nanodbc::database_error& e)
             {
                 std::cerr << "Database error: " << e.what() << std::endl;
-                return false;
+                return 0;
             }
-            return true;
+            return 0;
         }
 
         static bool updateGame(DBController* dbController, const game_vr& Game)
@@ -114,7 +119,7 @@ namespace DB
 
         inline std::vector<game_vr> getAllGames()       { return getAllGames(m_dbController);       }
         inline game_vr  getGameByID(uint32_t id)        { return getGameByID(m_dbController, id);   }
-        inline bool     createGame(const game_vr& Game) { return createGame(m_dbController, Game);  }
+        inline uint32_t createGame(const game_vr& Game) { return createGame(m_dbController, Game);  }
         inline bool     updateGame(const game_vr& Game) { return updateGame(m_dbController, Game);  }
         inline bool     deleteGame(uint32_t id)         { return deleteGame(m_dbController, id);    }
     private:

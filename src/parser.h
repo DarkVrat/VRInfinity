@@ -33,6 +33,18 @@ std::string parseToken(const std::string& input, TokenField field) {
     return "";
 }
 
+enum FORMULA {
+    HOURS = 0,
+    MINUTES = 1,
+    VR = 2,
+    SMALLHALL = 3
+};
+
+int parseFormula(const std::string& formula, FORMULA index)
+{
+    return std::stoi(formula.substr(index * 4, 2 - index / 2));
+}
+
 std::string getValue(const std::string& str, const std::string& key) {
     std::string searchKey = key + "=";
     size_t startPos = str.find(searchKey);
@@ -75,7 +87,8 @@ void decodePhone(std::string& str) {
     static const std::unordered_map<std::string, char> urlCodes = {
         {"%2B", '+'},
         {"%28", '('},
-        {"%29", ')'}
+        {"%29", ')'},
+        {"%3A", ':'}
     };
 
     std::string decodedStr;

@@ -57,7 +57,7 @@ namespace DB
             return Service;
         }
 
-        static bool createService(DBController* dbController, const service& Service)
+        static uint32_t createService(DBController* dbController, const service& Service)
         {
             try
             {
@@ -65,13 +65,18 @@ namespace DB
                 stmt.bind(0, Service.getName().c_str());
                 stmt.bind(1, Service.getFormula().c_str());
                 nanodbc::execute(stmt);
+
+                nanodbc::statement id_stmt(dbController->statement("SELECT LAST_INSERT_ID();"));
+                auto result = nanodbc::execute(id_stmt);
+                if (result.next())
+                    return result.get<int>(0);
             }
             catch (const nanodbc::database_error& e)
             {
                 std::cerr << "Database error: " << e.what() << std::endl;
-                return false;
+                return 0;
             }
-            return true;
+            return 0;
         }
 
         static bool updateService(DBController* dbController, const service& Service)
@@ -110,7 +115,7 @@ namespace DB
 
         inline std::vector<service> getAllServices()            { return getAllServices(m_dbController);           }
         inline service  getServiceByID(uint32_t id)             { return getServiceByID(m_dbController, id);       }
-        inline bool     createService(const service& Service)   { return createService(m_dbController, Service);   }
+        inline uint32_t createService(const service& Service)   { return createService(m_dbController, Service);   }
         inline bool     updateService(const service& Service)   { return updateService(m_dbController, Service);   }
         inline bool     deleteService(uint32_t id)              { return deleteService(m_dbController, id);        }
     private:

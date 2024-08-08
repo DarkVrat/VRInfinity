@@ -57,7 +57,7 @@ namespace DB
             return ResetPassword;
         }
 
-        static bool createResetPassword(DBController* dbController, const reset_password& ResetPassword)
+        static uint32_t createResetPassword(DBController* dbController, const reset_password& ResetPassword)
         {
             try
             {
@@ -65,13 +65,18 @@ namespace DB
                 stmt.bind(0, ResetPassword.getPhone().c_str());
                 stmt.bind(1, ResetPassword.getNewPassword().c_str());
                 nanodbc::execute(stmt);
+
+                nanodbc::statement id_stmt(dbController->statement("SELECT LAST_INSERT_ID();"));
+                auto result = nanodbc::execute(id_stmt);
+                if (result.next())
+                    return result.get<int>(0);
             }
             catch (const nanodbc::database_error& e)
             {
                 std::cerr << "Database error: " << e.what() << std::endl;
-                return false;
+                return 0;
             }
-            return true;
+            return 0;
         }
 
         static bool updateResetPassword(DBController* dbController, const reset_password& ResetPassword)
@@ -110,7 +115,7 @@ namespace DB
 
         inline std::vector<reset_password>  getAllResetPasswordes()                                     { return getAllResetPasswordes(m_dbController);                 }
         inline reset_password               getResetPasswordByID(uint32_t id)                           { return getResetPasswordByID(m_dbController, id);              }
-        inline bool                         createResetPassword(const reset_password& ResetPassword)    { return createResetPassword(m_dbController, ResetPassword);    }
+        inline uint32_t                     createResetPassword(const reset_password& ResetPassword)    { return createResetPassword(m_dbController, ResetPassword);    }
         inline bool                         updateResetPassword(const reset_password& ResetPassword)    { return updateResetPassword(m_dbController, ResetPassword);    }
         inline bool                         deleteResetPassword(uint32_t id)                            { return deleteResetPassword(m_dbController, id);               }
     private:

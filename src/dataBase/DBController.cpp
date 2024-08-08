@@ -72,7 +72,7 @@ void DBController::startTransaction()
 {
     try
     {
-        nanodbc::execute(m_conn, "BEGIN TRANSACTION");
+        nanodbc::execute(m_conn, "START TRANSACTION");
     }
     catch (const nanodbc::database_error& e)
     {

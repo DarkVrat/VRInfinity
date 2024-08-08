@@ -91,7 +91,7 @@ namespace DB
             return Visit;
         }
 
-        static bool createVisit(DBController* dbController, const visit& Visit)
+        static uint32_t createVisit(DBController* dbController, const visit& Visit)
         {
             try
             {
@@ -102,13 +102,18 @@ namespace DB
                 stmt.bind(3, Visit.getStart().c_str());
                 stmt.bind(4, &Visit.getServiceId());
                 nanodbc::execute(stmt);
+
+                nanodbc::statement id_stmt(dbController->statement("SELECT LAST_INSERT_ID();"));
+                auto result = nanodbc::execute(id_stmt);
+                if (result.next())
+                    return result.get<int>(0);
             }
             catch (const nanodbc::database_error& e)
             {
                 std::cerr << "Database error: " << e.what() << std::endl;
-                return false;
+                return 0;
             }
-            return true;
+            return 0;
         }
 
         static bool updateVisit(DBController* dbController, const visit& Visit)
@@ -151,7 +156,7 @@ namespace DB
         inline std::vector<visit> getAllVisitsByPhone(const std::string& phone) { return getAllVisitsByPhone(m_dbController, phone); }
         inline std::vector<visit> getAllVisits()        { return getAllVisits(m_dbController);      }
         inline visit    getVisitByID(uint32_t id)       { return getVisitByID(m_dbController, id);  }
-        inline bool     createVisit(const visit& Visit) { return createVisit(m_dbController, Visit); }
+        inline uint32_t createVisit(const visit& Visit) { return createVisit(m_dbController, Visit); }
         inline bool     updateVisit(const visit& Visit) { return updateVisit(m_dbController, Visit); }
         inline bool     deleteVisit(uint32_t id)        { return deleteVisit(m_dbController, id);   }
     private:

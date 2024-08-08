@@ -90,22 +90,27 @@ namespace DB
             return VisitsSmallhall;
         }
 
-        static bool createVisitsSmallhall(DBController* dbController, const visits_smallhall& VisitsSmallhall)
+        static uint32_t createVisitsSmallhall(DBController* dbController, const visits_smallhall& VisitsSmallhall)
         {
             try
             {
-                nanodbc::statement stmt(dbController->statement("INSERT INTO visits_smallhall (start, end, visit_id) VALUES (?, ?);"));
+                nanodbc::statement stmt(dbController->statement("INSERT INTO visits_smallhall (start, end, visit_id) VALUES (?, ?, ?);"));
                 stmt.bind(0, VisitsSmallhall.getStart().c_str());
                 stmt.bind(1, VisitsSmallhall.getEnd().c_str());
                 stmt.bind(2, &VisitsSmallhall.getVisitId());
                 nanodbc::execute(stmt);
+
+                nanodbc::statement id_stmt(dbController->statement("SELECT LAST_INSERT_ID();"));
+                auto result = nanodbc::execute(id_stmt);
+                if (result.next())
+                    return result.get<int>(0);
             }
             catch (const nanodbc::database_error& e)
             {
                 std::cerr << "Database error: " << e.what() << std::endl;
-                return false;
+                return 0;
             }
-            return true;
+            return 0;
         }
 
         static bool updateVisitsSmallhall(DBController* dbController, const visits_smallhall& VisitsSmallhall)
@@ -147,7 +152,7 @@ namespace DB
             { return getVisitsSmallhallInRange(m_dbController, startDate, endDate); }
         inline std::vector<visits_smallhall> getAllVisitsSmallhall()                    { return getAllVisitsSmallhall(m_dbController);                     }
         inline visits_smallhall  getVisitsSmallhallByID(uint32_t id)                    { return getVisitsSmallhallByID(m_dbController, id);                }
-        inline bool     createVisitsSmallhall(const visits_smallhall& VisitsSmallhall)  { return createVisitsSmallhall(m_dbController, VisitsSmallhall);    }
+        inline uint32_t createVisitsSmallhall(const visits_smallhall& VisitsSmallhall)  { return createVisitsSmallhall(m_dbController, VisitsSmallhall);    }
         inline bool     updateVisitsSmallhall(const visits_smallhall& VisitsSmallhall)  { return updateVisitsSmallhall(m_dbController, VisitsSmallhall);    }
         inline bool     deleteVisitsSmallhall(uint32_t id)                              { return deleteVisitsSmallhall(m_dbController, id);                 }
     private:

@@ -88,7 +88,7 @@ namespace DB
             return User;
         }
 
-        static bool createUser(DBController* dbController, const user& User)
+        static uint32_t createUser(DBController* dbController, const user& User)
         {
             try
             {
@@ -99,13 +99,18 @@ namespace DB
                 stmt.bind(3, User.getSurname().c_str());
                 stmt.bind(4, User.getRole().c_str());
                 nanodbc::execute(stmt);
+
+                nanodbc::statement id_stmt(dbController->statement("SELECT LAST_INSERT_ID();"));
+                auto result = nanodbc::execute(id_stmt);
+                if (result.next())
+                    return result.get<int>(0);
             }
             catch (const nanodbc::database_error& e)
             {
                 std::cerr << "Database error: " << e.what() << std::endl;
-                return false;
+                return 0;
             }
-            return true;
+            return 0;
         }
 
         static bool updateUser(DBController* dbController, const user& User)
@@ -148,7 +153,7 @@ namespace DB
         inline std::vector<user> getAllUsers()                      { return getAllUsers(m_dbController);           }
         inline user     getUserByID(uint32_t id)                    { return getUserByID(m_dbController, id);       }
         inline user     getUserByPhone(const std::string& phone)    { return getUserByPhone(m_dbController, phone); }
-        inline bool     createUser(const user& User)                { return createUser(m_dbController, User);      }
+        inline uint32_t createUser(const user& User)                { return createUser(m_dbController, User);      }
         inline bool     updateUser(const user& User)                { return updateUser(m_dbController, User);      }
         inline bool     deleteUser(uint32_t id)                     { return deleteUser(m_dbController, id);        }
     private:

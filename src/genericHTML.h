@@ -56,7 +56,7 @@ void genAccountHTML(std::string& html, const std::string& authCookie, DBControll
         for (const auto& vis : visits) 
         {
             service Service = service_CRUD::getServiceByID(dbController, vis.getServiceId());
-            table += "<tr><td>" + vis.getStart() + "</td><td>" + Service.getName() + "</td></tr>";
+            table += "<tr><td><timeForJS>" + vis.getStart() + "</timeForJS></td><td>" + Service.getName() + "</td></tr>";
         }
         html.replace(pos, placeholder.length(), table);
     }
@@ -159,7 +159,7 @@ void genNews(std::string& html, DBController* dbController, uint32_t page)
             result +=           "<img src=\"/image/" + image.getImage() + ".jpeg\" alt=\"News\">";
             result +=           "<div class=\"news-content\">";
             result +=               "<h2>" + NEWS.getSubject() + "</h2>";
-            result +=               "<p class=\"date\">" + NEWS.getTime() + "</p>";
+            result +=               "<p class=\"date\"><timeForJS>" + NEWS.getTime() + "</timeForJS></p>";
             result +=               "<p>" + text.getText() + "...</p>";
             result +=           "</div>";
             result +=       "</a>";
@@ -182,8 +182,8 @@ void genFullNews(std::string& html, DBController* dbController, uint32_t id)
     placeholder = "PLACE_FOR_TIMESTAMP";
     pos = html.find(placeholder);
     if (pos != std::string::npos)
-        html.replace(pos, placeholder.length(), NEWS.getTime());
-
+        html.replace(pos, placeholder.length(), "<timeForJS>" + NEWS.getTime() + "</timeForJS>");
+    
     placeholder = "PLACE_FOR_IMAGES";
     pos = html.find(placeholder);
     if (pos != std::string::npos)

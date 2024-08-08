@@ -57,7 +57,7 @@ namespace DB
             return TextNews;
         }
 
-        static bool createTextNews(DBController* dbController, const text_news& TextNews)
+        static uint32_t createTextNews(DBController* dbController, const text_news& TextNews)
         {
             try
             {
@@ -65,13 +65,18 @@ namespace DB
                 stmt.bind(0, TextNews.getText().c_str());
                 stmt.bind(1, &TextNews.getNextId());
                 nanodbc::execute(stmt);
+
+                nanodbc::statement id_stmt(dbController->statement("SELECT LAST_INSERT_ID();"));
+                auto result = nanodbc::execute(id_stmt);
+                if (result.next())
+                    return result.get<int>(0);
             }
             catch (const nanodbc::database_error& e)
             {
                 std::cerr << "Database error: " << e.what() << std::endl;
-                return false;
+                return 0;
             }
-            return true;
+            return 0;
         }
 
         static bool updateTextNews(DBController* dbController, const text_news& TextNews)
@@ -110,7 +115,7 @@ namespace DB
 
         inline std::vector<text_news> getAllTextNewses()            { return getAllTextNewses(m_dbController);          }
         inline text_news     getTextNewsByID(uint32_t id)           { return getTextNewsByID(m_dbController, id);       }
-        inline bool     createTextNews(const text_news& TextNews)   { return createTextNews(m_dbController, TextNews);  }
+        inline uint32_t createTextNews(const text_news& TextNews)   { return createTextNews(m_dbController, TextNews);  }
         inline bool     updateTextNews(const text_news& TextNews)   { return updateTextNews(m_dbController, TextNews);  }
         inline bool     deleteTextNews(uint32_t id)                 { return deleteTextNews(m_dbController, id);        }
     private:

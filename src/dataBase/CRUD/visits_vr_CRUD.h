@@ -90,22 +90,27 @@ namespace DB
             return VisitsVr;
         }
 
-        static bool createVisitsVr(DBController* dbController, const visits_vr& VisitsVr)
+        static uint32_t createVisitsVr(DBController* dbController, const visits_vr& VisitsVr)
         {
             try
             {
-                nanodbc::statement stmt(dbController->statement("INSERT INTO visits_vr (start, end, visit_id) VALUES (?, ?);"));
+                nanodbc::statement stmt(dbController->statement("INSERT INTO visits_vr (start, end, visit_id) VALUES (?, ?, ?);"));
                 stmt.bind(0, VisitsVr.getStart().c_str());
                 stmt.bind(1, VisitsVr.getEnd().c_str());
                 stmt.bind(2, &VisitsVr.getVisitId());
                 nanodbc::execute(stmt);
+
+                nanodbc::statement id_stmt(dbController->statement("SELECT LAST_INSERT_ID();"));
+                auto result = nanodbc::execute(id_stmt);
+                if (result.next())
+                    return result.get<int>(0);
             }
             catch (const nanodbc::database_error& e)
             {
                 std::cerr << "Database error: " << e.what() << std::endl;
-                return false;
+                return 0;
             }
-            return true;
+            return 0;
         }
 
         static bool updateVisitsVr(DBController* dbController, const visits_vr& VisitsVr)
@@ -147,7 +152,7 @@ namespace DB
             { return getVisitsVrInRange(m_dbController, startDate, endDate); }
         inline std::vector<visits_vr> getAllVisitsVr()              { return getAllVisitsVr(m_dbController);            }  
         inline visits_vr  getVisitsVrByID(uint32_t id)              { return getVisitsVrByID(m_dbController, id);       }
-        inline bool     createVisitsVr(const visits_vr& VisitsVr)   { return createVisitsVr(m_dbController, VisitsVr);  }
+        inline uint32_t createVisitsVr(const visits_vr& VisitsVr)   { return createVisitsVr(m_dbController, VisitsVr);  }
         inline bool     updateVisitsVr(const visits_vr& VisitsVr)   { return updateVisitsVr(m_dbController, VisitsVr);  }
         inline bool     deleteVisitsVr(uint32_t id)                 { return deleteVisitsVr(m_dbController, id);        }
     private:

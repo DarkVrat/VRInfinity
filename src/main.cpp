@@ -17,6 +17,7 @@
 #include "security.h"
 #include "parser.h"
 #include "genericHTML.h"
+#include "booking_logic.h"
 
 using namespace DB;
 
@@ -392,15 +393,66 @@ int main(int argc, char** argv)
         std::string name = url_decode(getValue(body, "name"));
         std::string surname = url_decode(getValue(body, "surname"));
         std::string phone = getValue(body, "phone");
-        std::string service = getValue(body, "service");
+        uint32_t service = std::atoi(getValue(body, "service").c_str());
         std::string data = getValue(body, "datepicker");
-        std::string time = getValue(body, "time");
+        std::string time = url_decode(getValue(body, "time"));
         decodePhone(phone);
 
+        DBController dbCon(readFile("res/DBConfig.txt"));
+        std::string formula = service_CRUD::getServiceByID(&dbCon, service).getFormula();
 
-         
+        int Hours =     parseFormula(formula, FORMULA::HOURS);
+        int Minutes =   parseFormula(formula, FORMULA::MINUTES);
+        int VR =        parseFormula(formula, FORMULA::VR);
+        int SmallHall = parseFormula(formula, FORMULA::SMALLHALL);
 
-        res.redirect("/"); 
+        std::string start = data + " " + time + ":00";
+        std::string end;
+
+        std::tm tm = {};
+        std::istringstream ss(start);
+        ss >> std::get_time(&tm, "%Y-%m-%d %H:%M:%S");
+        tm.tm_hour += Hours;
+        tm.tm_min += Minutes;
+        std::ostringstream oss;
+        oss << std::put_time(&tm, "%Y-%m-%d %H:%M:%S");
+        end = oss.str();
+
+        res.redirect("/");
+
+        dbCon.startTransaction();
+        uint32_t id = visit_CRUD::createVisit(&dbCon ,visit(0, name, surname, phone, start, service));
+        if (id == 0)
+        {
+            dbCon.rollbackTransaction();
+            res.end();
+            return;
+        }
+
+        for (int i = 0; i < VR; ++i)
+        {
+            uint32_t id_vr = visits_vr_CRUD::createVisitsVr(&dbCon, visits_vr(0, start, end, id));
+            if (id_vr == 0)
+            {
+                dbCon.rollbackTransaction();
+                res.end();
+                return;
+            }
+        }
+
+        if (SmallHall > 0)
+        {
+            uint32_t id_sh = visits_smallhall_CRUD::createVisitsSmallhall(&dbCon, visits_smallhall(0, start, end, id));
+            if (id_sh == 0)
+            {
+                dbCon.rollbackTransaction();
+                res.end();
+                return;
+            }
+        }
+
+
+        dbCon.commitTransaction();
         res.end();
     });
 
@@ -413,18 +465,10 @@ int main(int argc, char** argv)
         uint32_t serviceId = request_data["serviceId"].i();
         std::string date = request_data["date"].s();
 
-        std::vector<std::string> times = getTimes(serviceId, date);
+        DBController dbCon(readFile("res/DBConfig.txt"));
+        std::string TIMES = getAvailableTime(date, &dbCon, serviceId);
 
-        std::string response_data = "{\"times\":[";
-        for (size_t i = 0; i < times.size(); ++i) {
-            response_data += "\"" + times[i] + "\"";
-            if (i < times.size() - 1) {
-                response_data += ",";
-            }
-        }
-        response_data += "]}";
-
-        crow::response res{ response_data };
+        crow::response res{ TIMES };
         res.add_header("Content-Type", "application/json");
         return res;
 

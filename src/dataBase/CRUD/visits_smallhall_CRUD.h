@@ -9,8 +9,6 @@ namespace DB
     class visits_smallhall_CRUD
     {
     public:
-        visits_smallhall_CRUD(DBController* dbController) :m_dbController(dbController) {}
-
         static std::vector<visits_smallhall> getVisitsSmallhallInRange(DBController* dbController, const std::string& startDate, const std::string& endDate)
         {
             std::vector<visits_smallhall> visitsSmallhallVec;
@@ -147,15 +145,5 @@ namespace DB
             }
             return true;
         }
-
-        inline std::vector<visits_smallhall> getVisitsSmallhallInRange(const std::string& startDate, const std::string& endDate)
-            { return getVisitsSmallhallInRange(m_dbController, startDate, endDate); }
-        inline std::vector<visits_smallhall> getAllVisitsSmallhall()                    { return getAllVisitsSmallhall(m_dbController);                     }
-        inline visits_smallhall  getVisitsSmallhallByID(uint32_t id)                    { return getVisitsSmallhallByID(m_dbController, id);                }
-        inline uint32_t createVisitsSmallhall(const visits_smallhall& VisitsSmallhall)  { return createVisitsSmallhall(m_dbController, VisitsSmallhall);    }
-        inline bool     updateVisitsSmallhall(const visits_smallhall& VisitsSmallhall)  { return updateVisitsSmallhall(m_dbController, VisitsSmallhall);    }
-        inline bool     deleteVisitsSmallhall(uint32_t id)                              { return deleteVisitsSmallhall(m_dbController, id);                 }
-    private:
-        DBController* m_dbController;
     };
 }

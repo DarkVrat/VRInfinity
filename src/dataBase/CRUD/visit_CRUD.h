@@ -9,8 +9,6 @@ namespace DB
     class visit_CRUD
     {
     public:
-        visit_CRUD(DBController* dbController) :m_dbController(dbController) {}
-
         static std::vector<visit> getAllVisitsByPhone(DBController* dbController, const std::string& phone)
         {
             std::vector<visit> visits;
@@ -152,14 +150,5 @@ namespace DB
             }
             return true;
         }
-
-        inline std::vector<visit> getAllVisitsByPhone(const std::string& phone) { return getAllVisitsByPhone(m_dbController, phone); }
-        inline std::vector<visit> getAllVisits()        { return getAllVisits(m_dbController);      }
-        inline visit    getVisitByID(uint32_t id)       { return getVisitByID(m_dbController, id);  }
-        inline uint32_t createVisit(const visit& Visit) { return createVisit(m_dbController, Visit); }
-        inline bool     updateVisit(const visit& Visit) { return updateVisit(m_dbController, Visit); }
-        inline bool     deleteVisit(uint32_t id)        { return deleteVisit(m_dbController, id);   }
-    private:
-        DBController* m_dbController;
     };
 }

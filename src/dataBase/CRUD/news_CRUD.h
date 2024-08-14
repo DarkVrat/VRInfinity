@@ -9,8 +9,6 @@ namespace DB
     class news_CRUD
     {
     public:
-        news_CRUD(DBController* dbController) :m_dbController(dbController) {}
-
         static std::vector<news> getAllNewses(DBController* dbController)
         {
             std::vector<news> newses;
@@ -65,11 +63,12 @@ namespace DB
         {
             try
             {
-                nanodbc::statement stmt(dbController->statement("INSERT INTO news (time, subject, text_news_id, image_news_id) VALUES (?, ?, ?, ?);"));
-                stmt.bind(0, News.getTime().c_str());
-                stmt.bind(1, News.getSubject().c_str());
-                stmt.bind(2, &News.getTextNewsId());
-                stmt.bind(3, &News.getImageNewsId());
+                nanodbc::statement stmt(dbController->statement("INSERT INTO news (id, time, subject, text_news_id, image_news_id) VALUES (?, ?, ?, ?, ?);"));
+                stmt.bind(0, &News.getId());
+                stmt.bind(1, News.getTime().c_str());
+                stmt.bind(2, News.getSubject().c_str());
+                stmt.bind(3, &News.getTextNewsId());
+                stmt.bind(4, &News.getImageNewsId());
                 nanodbc::execute(stmt);
 
                 nanodbc::statement id_stmt(dbController->statement("SELECT LAST_INSERT_ID();"));
@@ -120,13 +119,5 @@ namespace DB
             }
             return true;
         }
-
-        inline std::vector<news> getAllNewses()         { return getAllNewses(m_dbController);      }
-        inline news     getNewsByID(uint32_t id)        { return getNewsByID(m_dbController, id);   }
-        inline uint32_t createNews(const news& News)    { return createNews(m_dbController, News);  }
-        inline bool     updateNews(const news& News)    { return updateNews(m_dbController, News);  }
-        inline bool     deleteNews(uint32_t id)         { return deleteNews(m_dbController, id);    }
-    private:
-        DBController* m_dbController;
     };
 }

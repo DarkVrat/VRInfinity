@@ -9,8 +9,6 @@ namespace DB
     class visits_vr_CRUD
     {
     public:
-        visits_vr_CRUD(DBController* dbController) :m_dbController(dbController) {}
-
         static std::vector<visits_vr> getVisitsVrInRange(DBController* dbController, const std::string& startDate, const std::string& endDate)
         {
             std::vector<visits_vr> visitsVrVec;
@@ -147,15 +145,5 @@ namespace DB
             }
             return true;
         }
-
-        inline std::vector<visits_vr> getVisitsVrInRange(const std::string& startDate, const std::string& endDate)          
-            { return getVisitsVrInRange(m_dbController, startDate, endDate); }
-        inline std::vector<visits_vr> getAllVisitsVr()              { return getAllVisitsVr(m_dbController);            }  
-        inline visits_vr  getVisitsVrByID(uint32_t id)              { return getVisitsVrByID(m_dbController, id);       }
-        inline uint32_t createVisitsVr(const visits_vr& VisitsVr)   { return createVisitsVr(m_dbController, VisitsVr);  }
-        inline bool     updateVisitsVr(const visits_vr& VisitsVr)   { return updateVisitsVr(m_dbController, VisitsVr);  }
-        inline bool     deleteVisitsVr(uint32_t id)                 { return deleteVisitsVr(m_dbController, id);        }
-    private:
-        DBController* m_dbController;
     };
 }

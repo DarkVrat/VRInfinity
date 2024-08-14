@@ -9,8 +9,6 @@ namespace DB
 	class user_CRUD
 	{
 	public:
-        user_CRUD(DBController* dbController) :m_dbController(dbController) {}
-          
         static std::vector<user> getAllUsers(DBController* dbController)
         {
             std::vector<user> users;
@@ -149,14 +147,5 @@ namespace DB
             }
             return true;
         }
-
-        inline std::vector<user> getAllUsers()                      { return getAllUsers(m_dbController);           }
-        inline user     getUserByID(uint32_t id)                    { return getUserByID(m_dbController, id);       }
-        inline user     getUserByPhone(const std::string& phone)    { return getUserByPhone(m_dbController, phone); }
-        inline uint32_t createUser(const user& User)                { return createUser(m_dbController, User);      }
-        inline bool     updateUser(const user& User)                { return updateUser(m_dbController, User);      }
-        inline bool     deleteUser(uint32_t id)                     { return deleteUser(m_dbController, id);        }
-    private:
-        DBController* m_dbController;
 	};
 }

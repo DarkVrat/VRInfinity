@@ -209,7 +209,7 @@ int main(int argc, char** argv)
             std::string token = getAuthToken(req);
             std::string html = readFile("res/login.html");
             genLoginState(html, verifyToken(token));
-            genErrorMassege(html, L"Неверная почта или пароль.");
+            genErrorMassege(html, L"Неверный номер или пароль.");
 
             res.set_header("Content-Type", "text/html");
             res.write(html);
@@ -222,6 +222,7 @@ int main(int argc, char** argv)
         std::string token = getAuthToken(req);
         std::string html = readFile("res/account.html");
         genLoginState(html, verifyToken(token));
+        genAdminButton(html, token);
 
         DBController dbController(readFile("res/DBConfig.txt"));
         genAccountHTML(html, token, &dbController);
@@ -301,8 +302,19 @@ int main(int argc, char** argv)
 
         if (USER_check.getId() == 0) { 
             user USER(0, phone, hashPassword(password), name, surname);
-            user_CRUD::createUser(&dbCon, USER); // не создавать куки при ошибке в БД
-            
+            uint32_t id = user_CRUD::createUser(&dbCon, USER);
+
+            if (id == 0)
+            {
+                std::string html = readFile("res/register.html");
+                genLoginState(html, false);
+                genErrorMassege(html, L"Ошибка регистрации, попробуйте позже или обратитесь к администратору");
+                res.set_header("Content-Type", "text/html");
+                res.write(html);
+                res.end();
+                return;
+            }
+
             std::string token = generateToken(name, surname, phone, "USER");
             setAuthToken(res, token);
             res.redirect("/");
@@ -310,9 +322,8 @@ int main(int argc, char** argv)
         }
         else
         {
-            std::string token = getAuthToken(req);
             std::string html = readFile("res/register.html");
-            genLoginState(html, verifyToken(token));
+            genLoginState(html, false);
             genErrorMassege(html, L"Пользователь с такой почтой уже существует. Забыли пароль? <a href=\"/reset_password\">Сброс пароля</a>");
 
             res.set_header("Content-Type", "text/html");
@@ -472,6 +483,23 @@ int main(int argc, char** argv)
         res.add_header("Content-Type", "application/json");
         return res;
 
+    });
+
+    CROW_ROUTE(app, "/adminPanel").methods("GET"_method)
+        ([](const crow::request& req, crow::response& res) {
+        std::string token = getAuthToken(req);
+        if (!verifyToken(token) || parseToken(token, TokenField::ROLE) != "ADMIN")
+        {
+            setAuthToken(res, "");
+            res.redirect("/");
+            res.end();
+        }
+
+        std::string html = readFile("res/adminPanel.html"); 
+
+        res.set_header("Content-Type", "text/html");
+        res.write(html);
+        res.end();
     });
 
     app.port(18080).multithreaded().run();

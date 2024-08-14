@@ -9,8 +9,6 @@ namespace DB
     class image_news_CRUD
     {
     public:
-        image_news_CRUD(DBController* dbController) :m_dbController(dbController) {}
-
         static std::vector<image_news> getAllImageNewses(DBController* dbController)
         {
             std::vector<image_news> imageNewses;
@@ -61,9 +59,10 @@ namespace DB
         {
             try
             {
-                nanodbc::statement stmt(dbController->statement("INSERT INTO image_news (image, next_id) VALUES (?, ?);"));
-                stmt.bind(0, ImageNews.getImage().c_str());
-                stmt.bind(1, &ImageNews.getNextId());
+                nanodbc::statement stmt(dbController->statement("INSERT INTO image_news (id, image, next_id) VALUES (?, ?, ?);"));
+                stmt.bind(0, &ImageNews.getId());
+                stmt.bind(1, ImageNews.getImage().c_str());
+                stmt.bind(2, &ImageNews.getNextId());
                 nanodbc::execute(stmt);
 
                 nanodbc::statement id_stmt(dbController->statement("SELECT LAST_INSERT_ID();"));
@@ -112,13 +111,5 @@ namespace DB
             }
             return true;
         }
-
-        inline std::vector<image_news> getAllImageNewses()              { return getAllImageNewses(m_dbController);             }
-        inline image_news     getImageNewsByID(int32_t id)              { return getImageNewsByID(m_dbController, id);          }
-        inline uint32_t createImageNews(const image_news& ImageNews)    { return createImageNews(m_dbController, ImageNews);    }
-        inline bool     updateImageNews(const image_news& ImageNews)    { return updateImageNews(m_dbController, ImageNews);    }
-        inline bool     deleteImageNews(int32_t id)                     { return deleteImageNews(m_dbController, id);           }
-    private:
-        DBController* m_dbController;
     };
 }

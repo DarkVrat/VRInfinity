@@ -9,8 +9,6 @@ namespace DB
     class reset_password_CRUD
     {
     public:
-        reset_password_CRUD(DBController* dbController) :m_dbController(dbController) {}
-
         static std::vector<reset_password> getAllResetPasswordes(DBController* dbController)
         {
             std::vector<reset_password> resetPasswordes;
@@ -112,13 +110,5 @@ namespace DB
             }
             return true;
         }
-
-        inline std::vector<reset_password>  getAllResetPasswordes()                                     { return getAllResetPasswordes(m_dbController);                 }
-        inline reset_password               getResetPasswordByID(uint32_t id)                           { return getResetPasswordByID(m_dbController, id);              }
-        inline uint32_t                     createResetPassword(const reset_password& ResetPassword)    { return createResetPassword(m_dbController, ResetPassword);    }
-        inline bool                         updateResetPassword(const reset_password& ResetPassword)    { return updateResetPassword(m_dbController, ResetPassword);    }
-        inline bool                         deleteResetPassword(uint32_t id)                            { return deleteResetPassword(m_dbController, id);               }
-    private:
-        DBController* m_dbController;
     };
 }

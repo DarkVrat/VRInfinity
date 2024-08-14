@@ -47,7 +47,6 @@ void genAccountHTML(std::string& html, const std::string& authCookie, DBControll
     if (pos != std::string::npos)
         html.replace(pos, placeholder.length(), phone);
 
-    //Переделать
     placeholder = "PLACE_FOR_TBODY";
     pos = html.find(placeholder);
     if (pos != std::string::npos) {
@@ -242,6 +241,23 @@ void genServices(std::string& html, DBController* dbController)
 
         for (auto& serv: list)
             result += "<option value=\"" + std::to_string(serv.getId()) + "\">" + serv.getName() + "</option>";
+
+        html.replace(pos, placeholder.length(), result);
+    }
+}
+
+void genAdminButton(std::string& html, const std::string& token)
+{
+    std::string placeholder = "PLACE_FOR_ADMIN";
+    size_t pos = html.find(placeholder);
+    if (pos != std::string::npos)
+    {
+        std::string result = "";
+        
+        if (parseToken(token, TokenField::ROLE) == "ADMIN")
+        {
+            result = "<a href=\"/adminPanel\" class=\"btn\">ADMIN</a>";
+        }
 
         html.replace(pos, placeholder.length(), result);
     }

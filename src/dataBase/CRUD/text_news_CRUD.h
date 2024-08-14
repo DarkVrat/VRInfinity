@@ -61,9 +61,10 @@ namespace DB
         {
             try
             {
-                nanodbc::statement stmt(dbController->statement("INSERT INTO text_news (text, next_id) VALUES (?, ?);"));
-                stmt.bind(0, TextNews.getText().c_str());
-                stmt.bind(1, &TextNews.getNextId());
+                nanodbc::statement stmt(dbController->statement("INSERT INTO text_news (id, text, next_id) VALUES (?, ?, ?);"));
+                stmt.bind(0, &TextNews.getId());
+                stmt.bind(1, TextNews.getText().c_str());
+                stmt.bind(2, &TextNews.getNextId());
                 nanodbc::execute(stmt);
 
                 nanodbc::statement id_stmt(dbController->statement("SELECT LAST_INSERT_ID();"));

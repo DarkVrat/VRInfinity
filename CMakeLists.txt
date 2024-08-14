@@ -5,11 +5,12 @@ project(${PROJECT})
 
 set(DATABASE_HEADERS 
 	src/dataBase/DBController.h
-	src/dataBase/converterTimeString.h
+	src/dataBase/poolControllers.h
 )
 
 set(DATABASE_SOURCE
 	src/dataBase/DBController.cpp
+	src/dataBase/poolControllers.cpp
 )
 
 set(TABLES_HEADERS
@@ -39,15 +40,33 @@ set(CRUD_HEADERS
 )
 
 add_executable(${PROJECT} 
-	src/main.cpp
-	src/security.h
-	src/parser.h
-	src/genericHTML.h
-	src/booking_logic.h
 	${DATABASE_HEADERS}
 	${DATABASE_SOURCE}
 	${TABLES_HEADERS}
 	${CRUD_HEADERS}
+	
+	src/booking_logic.cpp
+	src/booking_logic.h
+	
+	src/genericHTML.cpp
+	src/genericHTML.h
+	
+	src/getMethods.cpp
+	src/getMethods.h
+	
+	src/main.cpp
+	
+	src/parser.cpp
+	src/parser.h
+	
+	src/postMethods.cpp
+	src/postMethods.h
+	
+	src/security.cpp
+	src/security.h
+	
+	src/stringConverter.cpp
+	src/stringConverter.h
 )
 
 source_group("Header Files\\DataBase" FILES ${DATABASE_HEADERS})

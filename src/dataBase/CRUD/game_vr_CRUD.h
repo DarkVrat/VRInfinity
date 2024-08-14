@@ -9,8 +9,6 @@ namespace DB
     class game_vr_CRUD
     {
     public:
-        game_vr_CRUD(DBController* dbController) :m_dbController(dbController) {}
-
         static std::vector<game_vr> getAllGames(DBController* dbController)
         {
             std::vector<game_vr> games;
@@ -63,10 +61,11 @@ namespace DB
         {
             try
             {
-                nanodbc::statement stmt(dbController->statement("INSERT INTO game_vr (name, text, image) VALUES (?, ?, ?);"));
-                stmt.bind(0, Game.getName().c_str());
-                stmt.bind(1, Game.getText().c_str());
-                stmt.bind(2, Game.getImage().c_str());
+                nanodbc::statement stmt(dbController->statement("INSERT INTO game_vr (id, name, text, image) VALUES (?, ?, ?, ?);"));
+                stmt.bind(0, &Game.getId());
+                stmt.bind(1, Game.getName().c_str());
+                stmt.bind(2, Game.getText().c_str());
+                stmt.bind(3, Game.getImage().c_str());
                 nanodbc::execute(stmt);
 
                 nanodbc::statement id_stmt(dbController->statement("SELECT LAST_INSERT_ID();"));
@@ -116,13 +115,5 @@ namespace DB
             }
             return true;
         }
-
-        inline std::vector<game_vr> getAllGames()       { return getAllGames(m_dbController);       }
-        inline game_vr  getGameByID(uint32_t id)        { return getGameByID(m_dbController, id);   }
-        inline uint32_t createGame(const game_vr& Game) { return createGame(m_dbController, Game);  }
-        inline bool     updateGame(const game_vr& Game) { return updateGame(m_dbController, Game);  }
-        inline bool     deleteGame(uint32_t id)         { return deleteGame(m_dbController, id);    }
-    private:
-        DBController* m_dbController;
     };
 }

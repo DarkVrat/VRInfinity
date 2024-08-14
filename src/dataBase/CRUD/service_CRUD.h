@@ -61,9 +61,10 @@ namespace DB
         {
             try
             {
-                nanodbc::statement stmt(dbController->statement("INSERT INTO service (name, formula) VALUES (?, ?);"));
-                stmt.bind(0, Service.getName().c_str());
-                stmt.bind(1, Service.getFormula().c_str());
+                nanodbc::statement stmt(dbController->statement("INSERT INTO service (id, name, formula) VALUES (?, ?, ?);"));
+                stmt.bind(0, &Service.getId());
+                stmt.bind(1, Service.getName().c_str());
+                stmt.bind(2, Service.getFormula().c_str());
                 nanodbc::execute(stmt);
 
                 nanodbc::statement id_stmt(dbController->statement("SELECT LAST_INSERT_ID();"));

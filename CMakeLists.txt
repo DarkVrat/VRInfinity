@@ -45,8 +45,8 @@ add_executable(${PROJECT}
 	${TABLES_HEADERS}
 	${CRUD_HEADERS}
 	
-	src/booking_logic.cpp
-	src/booking_logic.h
+	src/bookingLogic.cpp
+	src/bookingLogic.h
 	
 	src/genericHTML.cpp
 	src/genericHTML.h
@@ -56,8 +56,8 @@ add_executable(${PROJECT}
 	
 	src/main.cpp
 	
-	src/parser.cpp
-	src/parser.h
+	src/localParser.cpp
+	src/localParser.h
 	
 	src/postMethods.cpp
 	src/postMethods.h
@@ -65,8 +65,7 @@ add_executable(${PROJECT}
 	src/security.cpp
 	src/security.h
 	
-	src/stringConverter.cpp
-	src/stringConverter.h
+	src/utility.h
 )
 
 source_group("Header Files\\DataBase" FILES ${DATABASE_HEADERS})

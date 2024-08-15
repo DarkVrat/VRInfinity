@@ -5,7 +5,7 @@
 #include <locale>
 #include <codecvt>
 
-#include "parser.h"
+#include "localParser.h"
 #include "dataBase/CRUD/visit_CRUD.h"
 #include "dataBase/CRUD/game_vr_CRUD.h"
 #include "dataBase/CRUD/news_CRUD.h"
@@ -34,14 +34,14 @@ void genAccountHTML(std::string& html, const std::string& authCookie, DBControll
     std::string placeholder = "PLACE_FOR_NAME";
     size_t pos = html.find(placeholder);
     if (pos != std::string::npos)
-        html.replace(pos, placeholder.length(), parseToken(authCookie, NAME));
+        html.replace(pos, placeholder.length(), localParser::parseToken(authCookie, localParser::TokenField::NAME));
 
     placeholder = "PLACE_FOR_SURNAME";
     pos = html.find(placeholder);
     if (pos != std::string::npos)
-        html.replace(pos, placeholder.length(), parseToken(authCookie, SURNAME));
+        html.replace(pos, placeholder.length(), localParser::parseToken(authCookie, localParser::TokenField::SURNAME));
 
-    std::string phone = parseToken(authCookie, PHONE);
+    std::string phone = localParser::parseToken(authCookie, localParser::TokenField::PHONE);
     placeholder = "PLACE_FOR_PHONE";
     pos = html.find(placeholder);
     if (pos != std::string::npos)
@@ -254,7 +254,7 @@ void genAdminButton(std::string& html, const std::string& token)
     {
         std::string result = "";
         
-        if (parseToken(token, TokenField::ROLE) == "ADMIN")
+        if (localParser::parseToken(token, localParser::TokenField::ROLE) == "ADMIN")
         {
             result = "<a href=\"/adminPanel\" class=\"btn\">ADMIN</a>";
         }

@@ -9,8 +9,6 @@ namespace DB
     class service_CRUD
     {
     public:
-        service_CRUD(DBController* dbController) :m_dbController(dbController) {}
-
         static std::vector<service> getAllServices(DBController* dbController)
         {
             std::vector<service> Services;
@@ -113,13 +111,5 @@ namespace DB
             }
             return true;
         }
-
-        inline std::vector<service> getAllServices()            { return getAllServices(m_dbController);           }
-        inline service  getServiceByID(uint32_t id)             { return getServiceByID(m_dbController, id);       }
-        inline uint32_t createService(const service& Service)   { return createService(m_dbController, Service);   }
-        inline bool     updateService(const service& Service)   { return updateService(m_dbController, Service);   }
-        inline bool     deleteService(uint32_t id)              { return deleteService(m_dbController, id);        }
-    private:
-        DBController* m_dbController;
     };
 }

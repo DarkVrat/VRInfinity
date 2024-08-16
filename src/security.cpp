@@ -3,6 +3,7 @@
 #include <vector>
 #include <iomanip>
 #include <sstream>
+#include "localParser.h"
 
 // -=-=- Вспомогательные инструменты хеширования -=-=-
 
@@ -65,6 +66,18 @@ bool security::verifyToken(const std::string& token)
 
     std::string expectedSignature = createHmac(secretKey, payload);
     return (receivedSignature == expectedSignature);
+}
+
+// Установка токена
+void security::setAuthToken(crow::response& res, const std::string& token)
+{
+    res.add_header("Set-Cookie", "token=" + token + "; Path=/; Max-Age=" + std::to_string(60 * 60 * 24 * 30));
+}
+
+// Получение токена
+std::string security::getAuthToken(const crow::request& req)
+{
+    return localParser::getValue(req.get_header_value("Cookie"), "token");
 }
 
 // Генерация случайного пароля

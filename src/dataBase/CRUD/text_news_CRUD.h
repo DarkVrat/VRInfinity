@@ -9,8 +9,6 @@ namespace DB
     class text_news_CRUD
     {
     public:
-        text_news_CRUD(DBController* dbController) :m_dbController(dbController) {}
-
         static std::vector<text_news> getAllTextNewses(DBController* dbController)
         {
             std::vector<text_news> textNewses;
@@ -113,13 +111,5 @@ namespace DB
             }
             return true;
         }
-
-        inline std::vector<text_news> getAllTextNewses()            { return getAllTextNewses(m_dbController);          }
-        inline text_news     getTextNewsByID(uint32_t id)           { return getTextNewsByID(m_dbController, id);       }
-        inline uint32_t createTextNews(const text_news& TextNews)   { return createTextNews(m_dbController, TextNews);  }
-        inline bool     updateTextNews(const text_news& TextNews)   { return updateTextNews(m_dbController, TextNews);  }
-        inline bool     deleteTextNews(uint32_t id)                 { return deleteTextNews(m_dbController, id);        }
-    private:
-        DBController* m_dbController;
     };
 }

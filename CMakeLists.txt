@@ -65,6 +65,7 @@ add_executable(${PROJECT}
 	src/security.cpp
 	src/security.h
 	
+	src/utility.cpp
 	src/utility.h
 )
 

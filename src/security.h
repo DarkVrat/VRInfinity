@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <array>
+#include "crow.h"
 
 class security
 {
@@ -12,6 +13,8 @@ public:
     // Функция генерации и верефикации токена
     static std::string generateToken(const std::string& name, const std::string& surname, const std::string& phone, const std::string& role);
     static bool verifyToken(const std::string& token);
+    static void setAuthToken(crow::response& res, const std::string& token);
+    static std::string getAuthToken(const crow::request& req);
 
     //Генерация случайного пароля
     static std::string generatePassword(int length);

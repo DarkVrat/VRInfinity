@@ -6,47 +6,6 @@ std::string genericHTML::to_string(const std::wstring& wstr)
 	return converter.to_bytes(wstr);
 }
 
-void genericHTML::genLoginState(std::string& html, bool flag)
-{
-    std::string placeholder = "PLACE_FOR_LOGIN_STATE";
-    size_t pos = html.find(placeholder);
-    if (pos != std::string::npos) {
-        html.replace(pos, placeholder.length(), flag ? to_string(L"<li><a href=\"/account\">Аккаунт</a></li>") : to_string(L"<li><a href=\"/login\">Войти</a></li>"));
-    }
-}
-
-void genericHTML::genAccountHTML(std::string& html, const std::string& authCookie, DBController* dbController)
-{
-    std::string placeholder = "PLACE_FOR_NAME";
-    size_t pos = html.find(placeholder);
-    if (pos != std::string::npos)
-        html.replace(pos, placeholder.length(), localParser::parseToken(authCookie, localParser::TokenField::NAME));
-
-    placeholder = "PLACE_FOR_SURNAME";
-    pos = html.find(placeholder);
-    if (pos != std::string::npos)
-        html.replace(pos, placeholder.length(), localParser::parseToken(authCookie, localParser::TokenField::SURNAME));
-
-    std::string phone = localParser::parseToken(authCookie, localParser::TokenField::PHONE);
-    placeholder = "PLACE_FOR_PHONE";
-    pos = html.find(placeholder);
-    if (pos != std::string::npos)
-        html.replace(pos, placeholder.length(), phone);
-
-    placeholder = "PLACE_FOR_TBODY";
-    pos = html.find(placeholder);
-    if (pos != std::string::npos) {
-        std::vector<visit> visits = visit_CRUD::getAllVisitsByPhone(dbController, phone);
-        std::string table = "";
-        for (const auto& vis : visits)
-        {
-            service Service = service_CRUD::getServiceByID(dbController, vis.getServiceId());
-            table += "<tr><td><timeForJS>" + vis.getStart() + "</timeForJS></td><td>" + Service.getName() + "</td></tr>";
-        }
-        html.replace(pos, placeholder.length(), table);
-    }
-}
-
 void genericHTML::genPages(std::string& html, const std::string& page, uint32_t maxPage, uint32_t countPage)
 {
     std::string placeholder = "PLACE_FOR_PAGES";
@@ -207,20 +166,6 @@ void genericHTML::genFullNews(std::string& html, DBController* dbController, uin
         }
 
         html.replace(pos, placeholder.length(), fullText);
-    }
-}
-
-void genericHTML::genErrorMassege(std::string& html, const std::wstring& massege)
-{
-    std::string placeholder = "PLACE_FOR_ERROR_MASSEGE";
-    size_t pos = html.find(placeholder);
-    if (pos != std::string::npos) {
-        if (massege == L"")
-        {
-            html.replace(pos, placeholder.length(), "");
-            return;
-        }
-        html.replace(pos, placeholder.length(), "<div class=\"error-message\" id=\"error-message\">" + to_string(massege) + "</div>");
     }
 }
 

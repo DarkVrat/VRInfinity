@@ -17,8 +17,8 @@ int main(int argc, char** argv)
     {
         std::string name = result.get<std::string>(0);
         int max_connections = result.get<int>(1);
-        DB::poolControllers::init(max_connections - 1, utility::readFile("res/DBConfig.txt"));
-        std::cout << "{!} Init " << max_connections - 1 << " connetors" << std::endl;
+        DB::poolControllers::init(max_connections, utility::readFile("res/DBConfig.txt"));
+        std::cout << "{!} Init " << max_connections << " connetors" << std::endl;
     }
     else
         std::cerr << "{E} Failed init connetors" << std::endl;
@@ -91,36 +91,6 @@ int main(int argc, char** argv)
         ([](const crow::request& req, crow::response& res) {
         getMethods::getCatalog(req, res);
     });
-     
-    CROW_ROUTE(app, "/login").methods("GET"_method)
-        ([](const crow::request& req, crow::response& res) {
-        getMethods::getLogin(req, res);
-    });
-
-    CROW_ROUTE(app, "/account").methods("GET"_method)
-        ([](const crow::request& req, crow::response& res) {
-        getMethods::getAccount(req, res);
-    });
-
-    CROW_ROUTE(app, "/logout").methods("GET"_method)
-        ([](const crow::request& req, crow::response& res) {
-        getMethods::getLogout(req, res);
-    });
-
-    CROW_ROUTE(app, "/register").methods("GET"_method)
-        ([](const crow::request& req, crow::response& res) {
-        getMethods::getRegister(req, res);
-    });
-
-    CROW_ROUTE(app, "/settings").methods("GET"_method)
-        ([](const crow::request& req, crow::response& res) {
-        getMethods::getSettings(req, res);
-    });
-
-    CROW_ROUTE(app, "/reset_password").methods("GET"_method)
-        ([](const crow::request& req, crow::response& res) {
-        getMethods::getResetPassword(req, res);
-    });
 
     CROW_ROUTE(app, "/booking").methods("GET"_method)
         ([](const crow::request& req, crow::response& res) {
@@ -134,26 +104,6 @@ int main(int argc, char** argv)
     // -=-=- GET Ìועמהû  -=-=- 
 
     // -=-=- POST Ìועמהû -=-=-
-    CROW_ROUTE(app, "/login").methods("POST"_method)
-        ([](const crow::request& req, crow::response& res) {
-        postMethods::postLogin(req, res);
-    });
-
-    CROW_ROUTE(app, "/settings").methods("POST"_method)
-        ([](const crow::request& req, crow::response& res) {
-        postMethods::postSettings(req, res);
-    });
-
-    CROW_ROUTE(app, "/register").methods("POST"_method)
-        ([](const crow::request& req, crow::response& res) {
-        postMethods::postRegister(req, res);
-    });
-
-    CROW_ROUTE(app, "/reset_password").methods("POST"_method)
-        ([](const crow::request& req, crow::response& res) {
-        postMethods::postResetPassword(req, res);
-    });
-
     CROW_ROUTE(app, "/get-available-times").methods(crow::HTTPMethod::POST)
         ([](const crow::request& req) {
         return postMethods::postGetAvailableTimes(req);

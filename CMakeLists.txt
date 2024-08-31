@@ -17,10 +17,8 @@ set(TABLES_HEADERS
 	src/dataBase/tables/game_vr.h
 	src/dataBase/tables/image_news.h
 	src/dataBase/tables/news.h
-	src/dataBase/tables/reset_password.h
 	src/dataBase/tables/service.h
 	src/dataBase/tables/text_news.h
-	src/dataBase/tables/user.h
 	src/dataBase/tables/visit.h
 	src/dataBase/tables/visits_smallhall.h
 	src/dataBase/tables/visits_vr.h
@@ -30,10 +28,8 @@ set(CRUD_HEADERS
 	src/dataBase/CRUD/game_vr_CRUD.h
 	src/dataBase/CRUD/image_news_CRUD.h
 	src/dataBase/CRUD/news_CRUD.h
-	src/dataBase/CRUD/reset_password_CRUD.h
 	src/dataBase/CRUD/service_CRUD.h
 	src/dataBase/CRUD/text_news_CRUD.h
-	src/dataBase/CRUD/user_CRUD.h
 	src/dataBase/CRUD/visit_CRUD.h
 	src/dataBase/CRUD/visits_smallhall_CRUD.h
 	src/dataBase/CRUD/visits_vr_CRUD.h
